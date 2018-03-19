@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import authRouter from './entities/auth/router';
 import userRouter from './entities/user/router';
+import teachingLoadRouter from './entities/teachingLoad/router';
 
 const router = Router();
 
@@ -28,5 +29,7 @@ router.use(userRouter);
 //     message: 'You must be logged in',
 //   });
 // });
+
+router.use(teachingLoadRouter);
 
 export default router;
