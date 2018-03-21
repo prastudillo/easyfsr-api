@@ -1,7 +1,6 @@
 import db from '../../database/index';
 import * as Query from './queries';
 import { filtered } from '../../utils';
-import * as Utils from '../../utils';
 
 const teachingLoadAttributes = ['teachingLoadCreds'];
 
@@ -22,7 +21,6 @@ export const updateTeachingLoad = ({ id }, teachingLoad) => {
       { id, ...teachingLoad },
       (err, results) => {
         if (err) return reject(500);
-        //else if (!results.length) return reject(404);
         return resolve(results.insertId);
       },
     );
@@ -43,6 +41,7 @@ export const getTeachingLoad = ({ id }) => {
   return new Promise((resolve, reject) => {
     db.query(Query.getTeachingLoad, { id }, (err, results) => {
       if (err) return reject(500);
+      else if (!results.length) return reject(404);
       return resolve(results);
     });
   });

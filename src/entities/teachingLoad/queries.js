@@ -1,4 +1,5 @@
-import * as Utils from '../../utils';
+import { formatQueryParams } from '../../utils';
+
 export const addTeachingLoad = `
 	INSERT INTO teachingLoad ( 
 		id, 
@@ -12,8 +13,8 @@ export const addTeachingLoad = `
 
 export const updateTeachingLoad = teachingLoad => `
 	UPDATE teachingLoad SET 
-		${Utils.formatQueryParams(teachingLoad)}
-		WHERE id = :id
+		${formatQueryParams(teachingLoad)}
+	WHERE id = :id
 `;
 
 export const deleteTeachingLoad = `

@@ -18,7 +18,13 @@ const router = Router();
  *   HTTP/1.1 200 OK
  *   {
  *     "status": 200,
- *     "message": "Successfully created teaching load details"
+ *     "message": "Successfully created teaching load details",
+ *     "data": [
+ *       {
+ *           "id": 1,
+ *           "teachingLoadCreds": 6;
+ *       }
+ *     ]
  *   }
  *
  * @apiError (Error 500) {String[]} errors List of errors
@@ -32,12 +38,12 @@ const router = Router();
  */
 router.post('/teachingLoad/', async (req, res) => {
   try {
-    const id = await Ctrl.addTeachingLoad(req.body);
-    //const teachingLoad = await Ctrl.getTeachingLoad({ id });
+    await Ctrl.addTeachingLoad(req.body);
+    const teachingLoad = await Ctrl.getTeachingLoad(req.body);
     res.status(200).json({
       status: 200,
       message: 'Successfully created teaching load details',
-      //data: teachingLoad
+      data: teachingLoad,
     });
   } catch (status) {
     let message = '';
@@ -66,7 +72,13 @@ router.post('/teachingLoad/', async (req, res) => {
  *   HTTP/1.1 200 OK
  *   {
  *     "status": 200,
- *     "message": "Successfully updated teaching load details"
+ *     "message": "Successfully updated teaching load details",
+ *     "data": [
+ *       {
+ *           "id": 1,
+ *           "teachingLoadCreds": 6;
+ *       }
+ *     ]
  *   }
  *
  * @apiError (Error 500) {String[]} errors List of errors
@@ -87,12 +99,12 @@ router.post('/teachingLoad/', async (req, res) => {
 router.put('/teachingLoad/:id', async (req, res) => {
   try {
     await Ctrl.updateTeachingLoad(req.params, req.body);
-    //const teachingLoad = await Ctrl.getTeachingLoad(req.params);
+    const teachingLoad = await Ctrl.getTeachingLoad(req.params);
 
     res.status(200).json({
       status: 200,
       message: 'Successfully updated teaching load details',
-      //data: teachingLoad,
+      data: teachingLoad,
     });
   } catch (status) {
     let message = '';
@@ -145,13 +157,11 @@ router.put('/teachingLoad/:id', async (req, res) => {
 
 router.delete('/teachingLoad/:id', async (req, res) => {
   try {
-    const id = await Ctrl.deleteTeachingLoad(req.params);
-    //const teachingLoad = await Ctrl.getTeachingLoad(req.params);
+    await Ctrl.deleteTeachingLoad(req.params);
 
     res.status(200).json({
       status: 200,
       message: 'Successfully deleted teaching load details',
-      //data: teachingLoad
     });
   } catch (status) {
     let message = '';
@@ -251,6 +261,10 @@ router.get('/teachingLoad/:id', async (req, res) => {
  *       {
  *           "id": 1,
  *           "teachingLoadCreds": 6;
+ *       },
+ *       {
+ *           "id": 2,
+ *           "teachingLoadCreds": 9;
  *       }
  *     ]
  *   }
@@ -273,7 +287,7 @@ router.get('/teachingLoad/:id', async (req, res) => {
 
 router.get('/teachingLoad', async (req, res) => {
   try {
-    const teachingLoads = await Ctrl.getAllTeachingLoad();
+    const teachingLoads = await Ctrl.getAllTeachingLoad(req.query);
 
     res.status(200).json({
       status: 200,
