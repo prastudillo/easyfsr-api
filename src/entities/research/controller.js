@@ -14,8 +14,6 @@ const researchAttributes = [
   'approvedUnits',
 ];
 
-const rCoAuthorAttributes = ['researchID', 'userID'];
-
 export const addResearch = research => {
   return new Promise((resolve, reject) => {
     db.query(Query.addResearch, { ...research }, (err, results) => {
@@ -26,77 +24,51 @@ export const addResearch = research => {
   });
 };
 
-export const addrCoAuthor = rCoAuthor => {
+export const updateResearch = ({ researchID }, research) => {
   return new Promise((resolve, reject) => {
-    db.query(Query.addrCoAuthor, { ...rCoAuthor }, (err, results) => {
-      console.log(err);
-      if (err) return reject(500);
-      return resolve(results.insertId);
-    });
-  });
-};
-
-export const deleteResearch = ({ id, researchID }) => {
-  return new Promise((resolve, reject) => {
-    db.query(Query.deleteResearch, { id, researchID }, (err, results) => {
-      if (err) return reject(500);
-      // else if (!results.changedRows) return reject(404);
-      return resolve();
-    });
-  });
-};
-
-export const deleterCoAuthor = ({ userID, researchID }) => {
-  return new Promise((resolve, reject) => {
-    db.query(Query.deleterCoAuthor, { userID, researchID }, (err, results) => {
-      console.log(err);
-      if (err) return reject(500);
-      // else if (!results.changedRows) return reject(404);
-      return resolve();
-    });
-  });
-};
-
-export const selectResearch = ({ id, researchID }) => {
-  return new Promise((resolve, reject) => {
-    db.query(Query.selectResearch, { id, researchID }, (err, results) => {
-      console.log(err);
-      if (err) return reject(500);
-      return resolve(results);
-    });
-  });
-};
-
-export const selectResearchWithCoAuthor = ({ id, researchID }) => {
-  return new Promise((resolve, reject) => {
+    if (!research) return reject(500);
     db.query(
-      Query.selectResearchWithCoAuthor,
-      { id, researchID },
+      Query.updateResearch(filtered(research, researchAttributes)),
+      { researchID, ...research },
       (err, results) => {
         console.log(err);
         if (err) return reject(500);
-        return resolve(results);
+        return resolve(results.insertId);
       },
     );
   });
 };
 
-export const selectAllResearch = ({ id }) => {
+export const deleteResearch = ({ researchID }) => {
   return new Promise((resolve, reject) => {
-    db.query(Query.selectAllResearch, { id }, (err, results) => {
+    db.query(Query.deleteResearch, { researchID }, (err, results) => {
       if (err) return reject(500);
-      // else if (!results.length) return reject(404);
+      // else if (!results.changedRows) return reject(404);
+      return resolve();
+    });
+  });
+};
+
+export const getResearch = ({ researchID }) => {
+  return new Promise((resolve, reject) => {
+    db.query(Query.getResearch, { researchID }, (err, results) => {
+      console.log('err: ' + err);
+      if (err) return reject(500);
       return resolve(results);
     });
   });
 };
 
-export const selectAllResearchWithCoAuthor = ({ id }) => {
+export const getAllResearch = research => {
   return new Promise((resolve, reject) => {
-    db.query(Query.selectAllResearchWithCoAuthor, { id }, (err, results) => {
-      if (err) return reject(500);
-      // else if (!results.length) return reject(404);
-      return resolve(results);
-    });
+    db.query(
+      Query.getAllResearch(filtered(research, researchAttributes)),
+      research,
+      (err, results) => {
+        if (err) return reject(500);
+        else if (!results.length) return reject(404);
+        return resolve(results);
+      },
+    );
   });
 };

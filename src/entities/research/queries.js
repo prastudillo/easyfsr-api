@@ -15,24 +15,32 @@ export const addResearch = `
   )
   VALUES ( :id, :researchID, :type, :role, :title, :startDate, :endDate, :funding, :approvedUnits )`;
 
-export const updateResearch = `UPDATE research 
-  SET type=:type, title=:title, role=:role, startDate=:startDate, endDate=:endDate, funding=:funding, approvedUnits=:approvedUnits  
-  WHERE id=:id and researchID=:researchID`;
+export const updateResearch = research => `
+  UPDATE research SET
+  ${formatQueryParams(research)}
+  WHERE researchID = :researchID
+`;
 
 //done
-export const deleteResearch = `delete from research where id=:id AND researchID = :researchID`;
+export const deleteResearch = `delete from research where researchID = :researchID`;
 
 //done
-export const selectAllResearch = `SELECT * FROM research WHERE id=:id`;
+// export const getAllResearch = `SELECT * FROM research WHERE id=:id`;
+
+export const getAllResearch = query => `
+  SELECT * from research ${
+    query.length ? `WHERE ${formatQueryParams(query)}` : ''
+  }
+`;
 
 //done
-export const selectAllResearchWithCoAuthor = `SELECT * FROM research NATURAL JOIN rCoAuthor where id = :id`;
+export const getAllResearchWithCoAuthor = `SELECT * FROM research NATURAL JOIN rCoAuthor where id = :id`;
 
 //done
-export const selectResearch = `SELECT * FROM research WHERE id=:id AND researchID = :researchID`;
+export const getResearch = `SELECT * FROM research WHERE researchID = :researchID`;
 
 //done
-export const selectResearchWithCoAuthor = `SELECT * FROM research NATURAL JOIN rCoAuthor where id = :id AND researchID = :researchID`;
+export const getResearchWithCoAuthor = `SELECT * FROM research NATURAL JOIN rCoAuthor where id = :id AND researchID = :researchID`;
 
 export const dropResearch = `DROP TABLE research`;
 
