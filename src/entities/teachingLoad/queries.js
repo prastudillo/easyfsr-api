@@ -1,3 +1,5 @@
+import { formatQueryParams } from '../../utils';
+
 export const addTeachingLoad = `
 	INSERT INTO teachingLoad ( 
 		id, 
@@ -9,9 +11,9 @@ export const addTeachingLoad = `
 	)
 `;
 
-export const updateTeachingLoad = `
+export const updateTeachingLoad = teachingLoad => `
 	UPDATE teachingLoad SET 
-		teachingLoadCreds = :teachingLoadCreds
+		${formatQueryParams(teachingLoad)}
 	WHERE id = :id
 `;
 
@@ -27,4 +29,8 @@ export const getTeachingLoad = `
 	WHERE id = :id
 	ORDER BY id ASC
 	LIMIT 10
+`;
+
+export const getTeachingLoads = `
+  SELECT * from teachingLoad
 `;
