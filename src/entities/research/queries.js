@@ -1,6 +1,9 @@
 import { formatQueryParams } from '../../utils';
 
-//done
+/*************************
+ * Research CRUD
+ *************************/
+
 export const addResearch = `
   INSERT INTO research (
     id, 
@@ -21,37 +24,65 @@ export const updateResearch = research => `
   WHERE researchID = :researchID
 `;
 
-//done
-export const deleteResearch = `delete from research where researchID = :researchID`;
+export const deleteResearch = `
+  DELETE from research 
+  WHERE researchID = :researchID
+`;
 
-//done
-// export const getAllResearch = `SELECT * FROM research WHERE id=:id`;
-
-export const getAllResearch = query => `
+export const getResearches = (query, sortBy) => `
   SELECT * from research ${
     query.length ? `WHERE ${formatQueryParams(query)}` : ''
   }
+  ORDER BY [field] ${sortBy === 'DESC' ? 'DESC' : 'ASC'} LIMIT :limit
+`;
+
+export const getResearch = `
+  SELECT * FROM research 
+  WHERE researchID = :researchID
+`;
+
+export const dropResearch = `
+  DROP TABLE research
+`;
+
+/********************************
+ * Research With CoWorker CRUD
+ ********************************/
+
+export const addrCoAuthor = `
+  INSERT INTO rCoAuthor ( 
+    researchID, 
+    userID 
+  ) 
+  VALUES (
+    :researchID, 
+    :userID
+  )
+`;
+
+export const getResearchesWithCoAuthor = (query, sortBy) => `
+  SELECT * from rCoAuthor ${
+    query.length ? `WHERE ${formatQueryParams(query)}` : ''
+  }
+  ORDER BY [field] ${sortBy === 'DESC' ? 'DESC' : 'ASC'} LIMIT :limit
 `;
 
 //done
-export const getAllResearchWithCoAuthor = `SELECT * FROM research NATURAL JOIN rCoAuthor where id = :id`;
-
-//done
-export const getResearch = `SELECT * FROM research WHERE researchID = :researchID`;
-
-//done
-export const getResearchWithCoAuthor = `SELECT * FROM research NATURAL JOIN rCoAuthor where id = :id AND researchID = :researchID`;
-
-export const dropResearch = `DROP TABLE research`;
-
-//done
-export const addrCoAuthor = `INSERT INTO rCoAuthor ( researchID, userID ) VALUES (:researchID, :userID)`;
-
-export const updaterCoAuthor = `UPDATE rCoAuthor 
-  	SET userID=:userID
-  	WHERE researchID=:researchID AND userID = :userID
+export const getResearchWithCoAuthor = `
+  SELECT * FROM research NATURAL JOIN rCoAuthor 
+  WHERE id = :id AND researchID = :researchID
 `;
+
+export const updaterCoAuthor = `
+  UPDATE rCoAuthor 
+  SET userID=:userID
+  WHERE researchID=:researchID AND userID = :userID
+`;
+
 //done
-export const deleterCoAuthor = `delete from rCoAuthor where userID = :userID AND researchID=:researchID`;
+export const deleterCoAuthor = `
+  DELETE from rCoAuthor 
+  WHERE userID = :userID AND researchID=:researchID
+`;
 
 export const droprCoAuthor = `DROP TABLE rCoAuthor`;

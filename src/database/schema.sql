@@ -26,7 +26,11 @@ CREATE TABLE user(
   isArchived BOOLEAN DEFAULT 0, 
   acctType VARCHAR(10) DEFAULT 'USER', -- ADMIN / USER
   CONSTRAINT `user_pk`
-    PRIMARY KEY (`userID`)
+    PRIMARY KEY (`userID`),
+  CONSTRAINT `user_empid_uk`
+    UNIQUE KEY (`employeeID`),
+  CONSTRAINT `user_email_uk`
+    UNIQUE KEY (`emailAddress`)
 );
 
 CREATE TABLE IF NOT EXISTS fsr(
@@ -143,20 +147,22 @@ CREATE TABLE `chTimeslot`(
 
 -- Professorial Chair or Faculty Grant or Nominee (Award)
 
-CREATE TABLE IF NOT EXISTS `award`(
+CREATE TABLE `award`(
+  `awardID` INT NOT NULL AUTO_INCREMENT, 
   `id` INT NOT NULL,
-  grantF VARCHAR (50) NOT NULL,
-  chairGrantTitle VARCHAR (50) NOT NULL,
-  collegeHasNominated VARCHAR (50) NOT NULL,
-  recipientOrNominee VARCHAR (50) NOT NULL,
-  professionalChair VARCHAR (50) NOT NULL,
-  approvedStartDate VARCHAR (50) NOT NULL,
-  endDate VARCHAR (50) NOT NULL,
+  `grantF` VARCHAR (50) NOT NULL,
+  `chairGrantTitle` VARCHAR (50) NOT NULL,
+  `collegeHasNominated` VARCHAR (50) NOT NULL,
+  `recipientOrNominee` VARCHAR (50) NOT NULL,
+  `professionalChair` VARCHAR (50) NOT NULL,
+  `approvedStartDate` VARCHAR (50) NOT NULL,
+  `endDate` VARCHAR (50) NOT NULL,
   CONSTRAINT `award_fsr_fk`
     FOREIGN KEY (`id`)
-    REFERENCES fsr(`id`)
+    REFERENCES fsr(`id`),
+  CONSTRAINT `award_pk`
+    PRIMARY KEY (`awardID`) 
 );
-
 -- Limited Practice of Profession
 
 CREATE TABLE IF NOT EXISTS `limitedPracticeOfProf`(
@@ -171,7 +177,7 @@ CREATE TABLE IF NOT EXISTS `limitedPracticeOfProf`(
 CREATE TABLE IF NOT EXISTS `extensionAndCommunityService`(
   `id` INT NOT NULL, 
   extAndCommServiceID INT NOT NULL AUTO_INCREMENT,
-  participant VARCHAR (50) NOT NULL,
+  participant INT(2) NOT NULL,
   role VARCHAR (50) NOT NULL,
   hours INT (50) NOT NULL,
   title VARCHAR (50) NOT NULL,
@@ -264,5 +270,3 @@ CREATE TABLE rCoAuthor(
 -- Privileges
 GRANT SUPER ON *.* TO 'easyfsr'@'localhost';
 GRANT ALL PRIVILEGES ON easyfsr.* TO 'easyfsr'@'localhost';
-
-INSERT INTO `user` VALUES (1, '5121328320','$2a$10$JQL/6dENt1TQofx49huAmu1e/K/m8UPn4SGXixRU5NYDK/QzpudbW','Erlen Mae','S','Evangelista',NULL,NULL,'128','full-time','esevangelista1@up.edu.ph',NULL,0,'USER');

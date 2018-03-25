@@ -50,13 +50,16 @@ db.config.queryFormat = function(query, values) {
       }.bind(this),
     );
 
-    return escaped.replace(/\[(\w+)\]/g, function(text, key) {
-      if (values.hasOwnProperty(key)) {
-        return this.escapeId(values[key]);
-      }
+    return escaped.replace(
+      /\[(\w+)\]/g,
+      function(text, key) {
+        if (values.hasOwnProperty(key)) {
+          return this.escapeId(values[key]);
+        }
 
-      return text;
-    });
+        return text;
+      }.bind(this),
+    );
   }
 };
 

@@ -25,12 +25,8 @@ export const addUser = `
 
 export const updateUser = user => `
   UPDATE user SET 
-  ${formatQueryParams(user)}
+  ${formatQueryParams(user, 'update')}
   WHERE userID = :userID
-`;
-
-export const getAllUser = `
-  SELECT * FROM user;
 `;
 
 export const deleteUser = `
@@ -41,5 +37,16 @@ export const deleteUser = `
 
 export const getUser = `
   SELECT * from user
-  WHERE userID = :userID
+  WHERE userID = :userID AND isArchived = 0
+`;
+
+export const getUsers = (query, sortBy) => `
+  SELECT * FROM user WHERE isArchived = 0 ${
+    query.length ? `AND ${formatQueryParams(query, 'get')}` : ''
+  } 
+  ORDER BY [field] ${sortBy === 'DESC' ? 'DESC' : 'ASC'} LIMIT :limit
+`;
+
+export const getTotalUsers = `
+  SELECT count(*) as total FROM user
 `;

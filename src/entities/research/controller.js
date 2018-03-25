@@ -1,6 +1,6 @@
 import db from '../../database/index';
 import * as Query from './queries';
-import { filtered } from '../../utils';
+import { filtered, escapeSearch } from '../../utils';
 
 const researchAttributes = [
   'id',
@@ -14,9 +14,31 @@ const researchAttributes = [
   'approvedUnits',
 ];
 
+const rCoAuthorAttributes = ['userID', 'researchID'];
+
+const searchFields = [
+  'type',
+  'role',
+  'title',
+  'startDate',
+  'endDate',
+  'funding',
+  'approvedUnits',
+];
+
 export const addResearch = research => {
   return new Promise((resolve, reject) => {
     db.query(Query.addResearch, { ...research }, (err, results) => {
+      console.log(err);
+      if (err) return reject(500);
+      return resolve(results.insertId);
+    });
+  });
+};
+
+export const addrCoAuthor = rCoAuthor => {
+  return new Promise((resolve, reject) => {
+    db.query(Query.addrCoAuthor, { ...rCoAuthor }, (err, results) => {
       console.log(err);
       if (err) return reject(500);
       return resolve(results.insertId);
@@ -59,14 +81,38 @@ export const getResearch = ({ researchID }) => {
   });
 };
 
-export const getAllResearch = research => {
+export const getResearches = research => {
   return new Promise((resolve, reject) => {
     db.query(
-      Query.getAllResearch(filtered(research, researchAttributes)),
-      research,
+      Query.getResearches(
+        filtered(research, researchAttributes),
+        research.sortBy,
+      ),
+      {
+        field: 'type',
+        ...escapeSearch(research, searchFields, research.limit),
+      },
       (err, results) => {
         if (err) return reject(500);
-        else if (!results.length) return reject(404);
+        return resolve(results);
+      },
+    );
+  });
+};
+
+export const getResearchesWithCoAuthor = rCoAuthor => {
+  return new Promise((resolve, reject) => {
+    db.query(
+      Query.getResearchesWithCoAuthor(
+        filtered(rCoAuthor, rCoAuthorAttributes),
+        rCoAuthor.sortBy,
+      ),
+      {
+        field: 'researchID',
+        ...escapeSearch(rCoAuthor, searchFields, rCoAuthor.limit),
+      },
+      (err, results) => {
+        if (err) return reject(500);
         return resolve(results);
       },
     );

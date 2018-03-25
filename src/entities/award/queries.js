@@ -1,3 +1,5 @@
+import { formatQueryParams } from '../../utils';
+
 export const addAward = `
   INSERT INTO award ( 
     id,
@@ -21,26 +23,25 @@ export const addAward = `
   )
 `;
 
-export const updateAward = `
+export const updateAward = award => `
   UPDATE award SET 
-    grant=:grantF,
-    chairGrantTitle=:chairGrantTitle,
-    collegeHasNominated=:collegeHasNominated,
-    receipient/nominee=:recipientOrNominee,
-    professionalChair=:professionalChair,
-    approvedStartDate=:approvedStartDate,
-    endDate=:endDate
-  WHERE id = DEFAULT
-`;
-
-export const getAward = `
-  SELECT * FROM award
-  WHERE id = :id 
-  ORDER BY id ASC
-  LIMIT 10
+   ${formatQueryParams(award, 'update')}
+  WHERE awardID = :awardID
 `;
 
 export const deleteAward = `
   DELETE FROM award
-  WHERE id = :id
+  WHERE awardID = :awardID
+`;
+
+export const getAward = `
+  SELECT * FROM award
+  WHERE awardID = :awardID
+`;
+
+export const getAwards = (query, sortBy) => `
+ SELECT * FROM award ${
+   query.length ? `WHERE ${formatQueryParams(query, 'get')}` : ''
+ }
+  ORDER BY [field] ${sortBy === 'DESC' ? 'DESC' : 'ASC'} LIMIT :limit
 `;

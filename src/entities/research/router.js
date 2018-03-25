@@ -72,6 +72,59 @@ router.post('/research/', async (req, res) => {
 });
 
 /**
+ * @api {post} /rCoAuthor addrCoAuthor
+ * @apiGroup Research with co author
+ * @apiName addrCoAuthor
+ *
+ * @apiParam (Body Params) {String} userID of user
+ * @apiParam (Body Params) {String} researchID ID of research
+ *
+ * @apiSuccess {Object} research new Research added
+ * @apiSuccess {String} research.researchID ID of research
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *   HTTP/1.1 200 OK
+ *   {
+ *     "data": {
+ *        "status": 200;
+ *        "message": 'Succesfully added research with co author'
+ *     }
+ *   }
+ *
+ * @apiError (Error 500) {String[]} errors List of errors
+ * @apiError (Error 500) {String} errors.message Error message
+ * @apiErrorExample {json} Error-Response:
+ *   HTTP/1.1 500 Internal Server Error
+ *   {
+ *     "status": 500,
+ *     "message": "Internal server error"
+ *   }
+ */
+
+router.post('/rCoAuthor/', async (req, res) => {
+  try {
+    const rCoAuthorObj = await Ctrl.addrCoAuthor(req.body);
+
+    // const rCoAuthor = await Ctrl.getrCoAuthor({ rCoAuthorObj });
+    console.log(req.body.rCoAuthor);
+    console.log(rCoAuthorObj);
+    res.status(200).json({
+      status: 200,
+      message: 'Successfully created research with co author',
+      // data: rCoAuthor,
+    });
+  } catch (status) {
+    let message = '';
+    switch (status) {
+      case 500:
+        message = 'Internal server error';
+        break;
+    }
+    res.status(status).json({ status, message });
+  }
+});
+
+/**
  * @api {put} /research/:researchID updateResearch
  * @apiGroup Research
  * @apiName updateResearch
@@ -280,9 +333,9 @@ router.get('/research/:researchID', async (req, res) => {
 });
 
 /**
- * @api {get} /research getAllResearch
+ * @api {get} /research getResearches
  * @apiGroup Research
- * @apiName getAllResearch
+ * @apiName getResearches
  *
  * @apiParam (Body Params) {String} id of fsr
  * @apiParam (Body Params) {String} researchID ID of research
@@ -325,18 +378,49 @@ router.get('/research/:researchID', async (req, res) => {
 
 router.get('/research/', async (req, res) => {
   try {
-    const researches = await Ctrl.getAllResearch(req.query);
+    const researches = await Ctrl.getResearches(req.query);
 
     res.status(200).json({
       status: 200,
       message: 'Successfully fetched all research',
       data: researches,
+      total: researches.length,
+      limit: req.query.limit,
+      page: req.query.page,
+      pages: Math.ceil(researches.length / req.query.limit),
     });
   } catch (status) {
     let message = '';
     switch (status) {
       case 404:
         message = 'Research not found';
+        break;
+      case 500:
+        message = 'Internal server error';
+        break;
+    }
+    res.status(status).json({ status, message });
+  }
+});
+
+router.get('/rCoAuthor/', async (req, res) => {
+  try {
+    const rCoAuthors = await Ctrl.getResearchesWithCoAuthor(req.query);
+
+    res.status(200).json({
+      status: 200,
+      message: 'Successfully fetched all research with coAuthors',
+      data: rCoAuthors,
+      total: rCoAuthors.length,
+      limit: req.query.limit,
+      page: req.query.page,
+      pages: Math.ceil(rCoAuthors.length / req.query.limit),
+    });
+  } catch (status) {
+    let message = '';
+    switch (status) {
+      case 404:
+        message = 'Research with co author not found';
         break;
       case 500:
         message = 'Internal server error';
