@@ -1,33 +1,102 @@
+import { formatQueryParams } from '../../utils';
+
 export const addCourse = `
-	INSERT INTO course 
-	( id, courseNumber, courseID, hoursPerWeek, school, credit ) 
-	VALUES ( :id, :courseNumber, :courseID, :hoursPerWeek, :school, :credit )`;
+	INSERT INTO course (
+		id,
+		courseNumber,
+		courseID,
+		hoursPerWeek,
+		school,
+		credit
+	)
+	VALUES (
+		:id,
+		:courseNumber,
+		:courseID,
+		:hoursPerWeek,
+		:school,
+		:credit
+	)
+`;
 
-export const updateCourse = `
-	UPDATE course 
-	SET hoursPerWeek=:hoursPerWeek, school=:school, credit=:credit 
-	WHERE courseID=:courseID AND id=:id`;
+export const updateCourse = course => `
+	UPDATE course SET
+	${formatQueryParams(course, 'update')}
+	WHERE courseID=:courseID AND id=:id
+`;
 
-export const deleteCourse = `delete from course where courseID = :courseID`;
+/*
 
-export const getAllCourse = `SELECT * from course where id=:id`;
+// Supports single or multiple rows of delete
+export const deleteCourses = query =>`
+	DELETE FROM subject
+	${query.length ? `WHERE ${formatQueryParams(query)}` : ''}
+`; 
+*/
 
-export const getAllCourseWithSched = `
-	SELECT * FROM course NATURAL JOIN courseSched 
-	WHERE id=:id 
-	ORDER BY courseID ASC LIMIT 10`;
+export const deleteCourse = `
+	DELETE FROM course where courseID = :courseID`;
 
-export const getCourseWithSched = `SELECT * FROM course NATURAL JOIN courseSched 
-	WHERE id=:id AND courseID=:courseID`;
+export const getCourses = (query, sortBy) => `
+	SELECT * FROM course ${
+    query.length ? `WHERE ${formatQueryParams(query, 'get')}` : ''
+  } 
+  	ORDER BY [field] ${sortBy === 'DESC' ? 'DESC' : 'ASC'} 
+  	LIMIT :limit
+`;
 
-export const dropCourse = `DROP TABLE course`;
+export const getTotalCourses = `
+	SELECT count(*) as total FROM course
+`;
 
-export const addCourseSched = `INSERT INTO courseSched ( courseID, day, time ) VALUES ( :courseID, :day, :time );`;
+export const getTotalCoursesByFSR = `
+	SELECT COUNT(*) as total FROM course
+	WHERE id = :id
+`;
 
-export const updateCourseSched = `UPDATE courseSched SET day= :day, time=:time  WHERE courseID=:courseID AND id=:id`;
+export const getCoursesWithSched = (query, sortBy) => `
+	SELECT *
+	FROM course natural join courseSched ${
+    query.length ? `WHERE ${formatQueryParams(query, 'get')}` : ''
+  }
+	ORDER BY [field] ${sortBy === 'DESC' ? 'DESC' : 'ASC'} 
+	LIMIT :limit
+`;
 
-export const deleteCourseSched = `DELETE from courseSched where courseID = :courseID AND id = :id AND day=:day AND time=:time`;
+export const getCourseWithSched = `
+	SELECT * FROM course NATURAL JOIN courseSched
+	WHERE id=:id AND courseID=:courseID
+`;
 
-export const getCourseSched = `SELECT * FROM courseSched WHERE courseID=:courseID`;
+export const addCourseSched = `
+	INSERT INTO courseSched (
+		courseSchedID
+		courseID,
+		day,
+		time
+	)
+	VALUES (
+		DEFAULT,
+		:courseID,
+		:day,
+		:time
+	);
+`;
 
-export const dropCourseSched = `DROP TABLE courseSched`;
+export const getCourseScheds = query => `
+	SELECT * FROM courseSched ${
+    query.length ? `WHERE ${formatQueryParams(query, 'get')}` : ''
+  }	
+`;
+
+export const updateCourseSched = timeslot => `
+	UPDATE courseSched SET
+	${formatQueryParams(timeslot, 'update')}
+	WHERE courseID = :courseID
+`;
+
+// Supports single or multiple rows of delete
+export const deleteCourseSched = (query = `
+	DELETE FROM courseSched
+	${query.length ? `WHERE ${formatQueryParams(query)}` : ''}
+`);

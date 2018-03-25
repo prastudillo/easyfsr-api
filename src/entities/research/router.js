@@ -19,7 +19,7 @@ const router = Router();
  * @apiParam (Body Params) {String} funding funding of research
  * @apiParam (Body Params) {String} approvedUnits approved units of research
  *
- * @apiSuccess {Object} research new Research added
+ * @apiSuccess {Object} research Successfully added research
  * @apiSuccess {String} research.researchID ID of research
  * @apiSuccess {String} research.type type of research
  * @apiSuccess {String} research.role role of research
@@ -34,7 +34,7 @@ const router = Router();
  *   {
  *     "data": {
  *        "status": 200;
- *        "message": 'Succesfully added research'
+ *        "message": 'Successfully added research'
  *     }
  *   }
  *
@@ -73,21 +73,22 @@ router.post('/research/', async (req, res) => {
 
 /**
  * @api {post} /rCoAuthor addrCoAuthor
- * @apiGroup Research with co author
+ * @apiGroup rCoAuthor
  * @apiName addrCoAuthor
  *
  * @apiParam (Body Params) {String} userID of user
  * @apiParam (Body Params) {String} researchID ID of research
+ * @apiParam (Body Params) {String} rCoAuthorID ID of rCoAuthor
  *
- * @apiSuccess {Object} research new Research added
- * @apiSuccess {String} research.researchID ID of research
+ * @apiSuccess {Object} rCoAuthor Successfully Research with CoAuthor added
+ * @apiSuccess {String} rCoAuthor.rCoAuthorID rCoAuthorID of rCoAuthor
  *
  * @apiSuccessExample {json} Success-Response:
  *   HTTP/1.1 200 OK
  *   {
  *     "data": {
  *        "status": 200;
- *        "message": 'Succesfully added research with co author'
+ *        "message": 'Successfully added research with coAuthor'
  *     }
  *   }
  *
@@ -103,15 +104,15 @@ router.post('/research/', async (req, res) => {
 
 router.post('/rCoAuthor/', async (req, res) => {
   try {
-    const rCoAuthorObj = await Ctrl.addrCoAuthor(req.body);
+    const rCoAuthorID = await Ctrl.addrCoAuthor(req.body);
 
-    // const rCoAuthor = await Ctrl.getrCoAuthor({ rCoAuthorObj });
+    const rCoAuthor = await Ctrl.getrCoAuthor({ rCoAuthorID });
     console.log(req.body.rCoAuthor);
-    console.log(rCoAuthorObj);
+    console.log(rCoAuthorID);
     res.status(200).json({
       status: 200,
-      message: 'Successfully created research with co author',
-      // data: rCoAuthor,
+      message: 'Successfully created research with coAuthor',
+      data: rCoAuthor,
     });
   } catch (status) {
     let message = '';
@@ -139,7 +140,7 @@ router.post('/rCoAuthor/', async (req, res) => {
  * @apiParam (Body Params) {String} funding funding of research
  * @apiParam (Body Params) {String} approvedUnits approved units of research
  *
- * @apiSuccess {Object} research new Research added
+ * @apiSuccess {Object} research Successfully updated research
  * @apiSuccess {String} research.researchID ID of research
  * @apiSuccess {String} research.type type of research
  * @apiSuccess {String} research.role role of research
@@ -154,7 +155,7 @@ router.post('/rCoAuthor/', async (req, res) => {
  *   {
  *     "data": {
  *        "status": 200;
- *        "message": 'Succesfully updated research'
+ *        "message": 'Successfully updated research'
  *     }
  *   }
  *
@@ -193,6 +194,61 @@ router.put('/research/:researchID', async (req, res) => {
 });
 
 /**
+ * @api {put} /rCoAuthor/:rCoAuthorID updaterCoAuthor
+ * @apiGroup rCoAuthor
+ * @apiName updaterCoAuthor
+ *
+ * @apiParam (Body Params) {String} userID of user
+ * @apiParam (Body Params) {String} researchID ID of research
+ * @apiParam (Body Params) {String} rCoAuthorID ID of rCoAuthor
+ *
+ * @apiSuccess {Object} rCoAuthor Successfully updated research with coAuthor
+ * @apiSuccess {String} rCoAuthor.rCoAuthorID rCoAuthorID of rCoAuthor
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *   HTTP/1.1 200 OK
+ *   {
+ *     "data": {
+ *        "status": 200;
+ *        "message": 'Successfully updated research with coAuthor'
+ *     }
+ *   }
+ *
+ * @apiError (Error 500) {String[]} errors List of errors
+ * @apiError (Error 500) {String} errors.message Error message
+ * @apiErrorExample {json} Error-Response:
+ *   HTTP/1.1 500 Internal Server Error
+ *   {
+ *     "status": 500,
+ *     "message": "Internal server error"
+ *   }
+ */
+
+router.put('/rCoAuthor/:rCoAuthorID', async (req, res) => {
+  try {
+    await Ctrl.updaterCoAuthor(req.params, req.body);
+    const rCoAuthor = await Ctrl.getrCoAuthor(req.params);
+
+    res.status(200).json({
+      status: 200,
+      message: 'Successfully updated research with coAuthor',
+      data: rCoAuthor,
+    });
+  } catch (status) {
+    let message = '';
+    switch (status) {
+      case 404:
+        message = 'Research with coAuthor not found';
+        break;
+      case 500:
+        message = 'Internal server error';
+        break;
+    }
+    res.status(status).json({ status, message });
+  }
+});
+
+/**
  * @api {delete} /research/:researchID deleteResearch
  * @apiGroup Research
  * @apiName deleteResearch
@@ -207,7 +263,7 @@ router.put('/research/:researchID', async (req, res) => {
  * @apiParam (Body Params) {String} funding funding of research
  * @apiParam (Body Params) {String} approvedUnits approved units of research
  *
- * @apiSuccess {Object} research new Research added
+ * @apiSuccess {Object} research Successfully deleted research
  * @apiSuccess {String} research.researchID ID of research
  * @apiSuccess {String} research.type type of research
  * @apiSuccess {String} research.role role of research
@@ -222,7 +278,7 @@ router.put('/research/:researchID', async (req, res) => {
  *   {
  *     "data": {
  *        "status": 200;
- *        "message": 'Succesfully deleted research'
+ *        "message": 'Successfully deleted research'
  *     }
  *   }
  *
@@ -265,6 +321,63 @@ router.delete('/research/:researchID', async (req, res) => {
 });
 
 /**
+ * @api {delete} /rCoAuthor/:rCoAutorID deleterCoAuthor
+ * @apiGroup rCoAuthor
+ * @apiName deleterCoAuthor
+ *
+ * @apiParam (Body Params) {String} userID of user
+ * @apiParam (Body Params) {String} researchID ID of research
+ * @apiParam (Body Params) {String} rCoAuthorID ID of rCoAuthor
+ *
+ * @apiSuccess {Object} rCoAuthor Successfully deleted research with coAuthor
+ * @apiSuccess {String} rCoAuthor.rCoAuthorID rCoAuthorID of rCoAuthor
+ *
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *   HTTP/1.1 200 OK
+ *   {
+ *     "data": {
+ *        "status": 200;
+ *        "message": 'Successfully deleted research with coAuthor'
+ *     }
+ *   }
+ *
+ * @apiError (Error 500) {String[]} errors List of errors
+ * @apiError (Error 500) {String} errors.message Error message
+ * @apiErrorExample {json} Error-Response:
+ *   HTTP/1.1 500 Internal Server Error
+ *   {
+ *     "status": 500,
+ *     "message": "Internal server error"
+ *   }
+ */
+
+router.delete('/rCoAuthor/:rCoAuthorID', async (req, res) => {
+  try {
+    const rCoAuthorID = await Ctrl.deleterCoAuthor(req.body);
+    const rCoAuthor = await Ctrl.getrCoAuthor({ rCoAuthorID });
+
+    console.log(rCoAuthor);
+    res.status(200).json({
+      status: 200,
+      message: 'Successfully deleted research with coAuthor',
+      data: rCoAuthor,
+    });
+  } catch (status) {
+    let message = '';
+    switch (status) {
+      case 404:
+        message = 'Research with coAuthor not found';
+        break;
+      case 500:
+        message = 'Internal server error';
+        break;
+    }
+    res.status(status).json({ status, message });
+  }
+});
+
+/**
  * @api {get} /research/:researchID getResearch
  * @apiGroup Research
  * @apiName getResearch
@@ -279,7 +392,7 @@ router.delete('/research/:researchID', async (req, res) => {
  * @apiParam (Body Params) {String} funding funding of research
  * @apiParam (Body Params) {String} approvedUnits approved units of research
  *
- * @apiSuccess {Object} research new Research added
+ * @apiSuccess {Object} research Successfully fetched research
  * @apiSuccess {String} research.researchID ID of research
  * @apiSuccess {String} research.type type of research
  * @apiSuccess {String} research.role role of research
@@ -294,7 +407,7 @@ router.delete('/research/:researchID', async (req, res) => {
  *   {
  *     "data": {
  *        "status": 200;
- *        "message": 'Succesfully fetched research'
+ *        "message": 'Successfully fetched research'
  *     }
  *   }
  *
@@ -333,6 +446,61 @@ router.get('/research/:researchID', async (req, res) => {
 });
 
 /**
+ * @api {get} /rCoAuthor/:rCoAuthorID getrCoAuthor
+ * @apiGroup rCoAuthor
+ * @apiName getrCoAuthor
+ *
+ * @apiParam (Body Params) {String} userID of user
+ * @apiParam (Body Params) {String} researchID ID of research
+ * @apiParam (Body Params) {String} rCoAuthorID ID of rCoAuthor
+ *
+ * @apiSuccess {Object} rCoAuthor Successfully fetched research with coAuthor
+ * @apiSuccess {String} rCoAuthor.rCoAuthorID rCoAuthorID of rCoAuthor
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *   HTTP/1.1 200 OK
+ *   {
+ *     "data": {
+ *        "status": 200;
+ *        "message": 'Successfully fetched research with coAuthor'
+ *     }
+ *   }
+ *
+ * @apiError (Error 500) {String[]} errors List of errors
+ * @apiError (Error 500) {String} errors.message Error message
+ * @apiErrorExample {json} Error-Response:
+ *   HTTP/1.1 500 Internal Server Error
+ *   {
+ *     "status": 500,
+ *     "message": "Internal server error"
+ *   }
+ */
+
+router.get('/rCoAuthor/:rCoAuthorID', async (req, res) => {
+  try {
+    const rCoAuthor = await Ctrl.getrCoAuthor(req.params);
+    console.log(rCoAuthor);
+    res.status(200).json({
+      status: 200,
+      message: 'Successfully fetched research with coAuthor',
+      data: rCoAuthor,
+    });
+  } catch (status) {
+    let message = '';
+    switch (status) {
+      case 404:
+        message = 'Research with coAuthor not found';
+        break;
+      case 500:
+        message = 'Internal server error';
+        break;
+    }
+    res.status(status).json({ status, message });
+    return research;
+  }
+});
+
+/**
  * @api {get} /research getResearches
  * @apiGroup Research
  * @apiName getResearches
@@ -347,7 +515,7 @@ router.get('/research/:researchID', async (req, res) => {
  * @apiParam (Body Params) {String} funding funding of research
  * @apiParam (Body Params) {String} approvedUnits approved units of research
  *
- * @apiSuccess {Object} research new Research added
+ * @apiSuccess {Object} research Successfully fetched researches
  * @apiSuccess {String} research.researchID ID of research
  * @apiSuccess {String} research.type type of research
  * @apiSuccess {String} research.role role of research
@@ -362,7 +530,7 @@ router.get('/research/:researchID', async (req, res) => {
  *   {
  *     "data": {
  *        "status": 200;
- *        "message": 'Succesfully fetched all research'
+ *        "message": 'Successfully fetched researches'
  *     }
  *   }
  *
@@ -382,7 +550,7 @@ router.get('/research/', async (req, res) => {
 
     res.status(200).json({
       status: 200,
-      message: 'Successfully fetched all research',
+      message: 'Successfully fetched researches',
       data: researches,
       total: researches.length,
       limit: req.query.limit,
@@ -403,13 +571,45 @@ router.get('/research/', async (req, res) => {
   }
 });
 
+/**
+ * @api {get} /rCoAuthor getrCoAuthors
+ * @apiGroup rCoAuthor
+ * @apiName getrCoAuthors
+ *
+ * @apiParam (Body Params) {String} userID of user
+ * @apiParam (Body Params) {String} researchID ID of research
+ * @apiParam (Body Params) {String} rCoAuthorID ID of rCoAuthor
+ *
+ * @apiSuccess {Object} rCoAuthor Successfully fetched researches with coAuthor
+ * @apiSuccess {String} rCoAuthor.rCoAuthorID rCoAuthorID of rCoAuthor
+ *
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *   HTTP/1.1 200 OK
+ *   {
+ *     "data": {
+ *        "status": 200;
+ *        "message": 'Successfully fetched researches with coAuthor'
+ *     }
+ *   }
+ *
+ * @apiError (Error 500) {String[]} errors List of errors
+ * @apiError (Error 500) {String} errors.message Error message
+ * @apiErrorExample {json} Error-Response:
+ *   HTTP/1.1 500 Internal Server Error
+ *   {
+ *     "status": 500,
+ *     "message": "Internal server error"
+ *   }
+ */
+
 router.get('/rCoAuthor/', async (req, res) => {
   try {
-    const rCoAuthors = await Ctrl.getResearchesWithCoAuthor(req.query);
+    const rCoAuthors = await Ctrl.getrCoAuthors(req.query);
 
     res.status(200).json({
       status: 200,
-      message: 'Successfully fetched all research with coAuthors',
+      message: 'Successfully fetched researches with coAuthor',
       data: rCoAuthors,
       total: rCoAuthors.length,
       limit: req.query.limit,
@@ -420,7 +620,7 @@ router.get('/rCoAuthor/', async (req, res) => {
     let message = '';
     switch (status) {
       case 404:
-        message = 'Research with co author not found';
+        message = 'Research with coAuthor not found';
         break;
       case 500:
         message = 'Internal server error';

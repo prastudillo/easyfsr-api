@@ -33,12 +33,13 @@ CREATE TABLE user(
     UNIQUE KEY (`emailAddress`)
 );
 
-CREATE TABLE IF NOT EXISTS fsr(
+CREATE TABLE fsr(
   `id` INT NOT NULL AUTO_INCREMENT,
   `userID` INT NOT NULL, 
   `acadYear` VARCHAR (20) NOT NULL,
   `semester` VARCHAR (10) NOT NULL,
   `isChecked` boolean DEFAULT 0,
+  `teachingLoadCreds` INT(2) DEFAULT 0,
   -- place all entitiesID here
   CONSTRAINT `fsr_pk` 
     PRIMARY KEY (`id`),
@@ -51,37 +52,43 @@ CREATE TABLE IF NOT EXISTS fsr(
 
   -- teaching_load, subject, timeslot
 
-CREATE TABLE IF NOT EXISTS `teachingLoad`(
-  `id` INT NOT NULL,
-  `teachingLoadCreds` int(2) NOT NULL,
-  CONSTRAINT `teachingLoad_user_fk`
-    FOREIGN KEY (`id`)
-    REFERENCES fsr(`id`)
-);
+-- CREATE TABLE `teachingLoad`(
+--   `id` INT NOT NULL,
+--   `teachingLoadCreds` INT(2) NOT NULL,
+--   CONSTRAINT `teachingLoad_user_fk`
+--     FOREIGN KEY (`id`)
+--     REFERENCES fsr(`id`),
+--   CONSTRAINT `teachingLoad_pk`  
+--     PRIMARY KEY(`id`)
+-- );
 
-CREATE TABLE IF NOT EXISTS `subject`(
+CREATE TABLE `subject`(
   `id` INT NOT NULL,
-  `subjectID` INT NOT NULL AUTO_INCREMENT,
   `subjectCode` VARCHAR (30) NOT NULL,
-  `teachingLoadCreds` int(2) NOT NULL,
-  `noOfStudents` int(3) NOT NULL,
-  `hoursPerWeek` int(2) NOT NULL,
-  `sectionCode` varchar(10) NOT NULL,
-  `room` varchar(10) NOT NULL,
+  `subjectID` INT NOT NULL AUTO_INCREMENT,
+  `teachingLoadCreds` INT(2) DEFAULT 0,
+  `noOfStudents` INT(3) NOT NULL, 
+  `hoursPerWeek` INT(2) NOT NULL,
+  `sectionCode` VARCHAR(10) NOT NULL,
+  `room` VARCHAR(10) NOT NULL,
   CONSTRAINT `subject_pk` 
     PRIMARY KEY (`subjectID`), 
   CONSTRAINT `subject_teachingLoad_fk`
     FOREIGN KEY (`id`)
-    REFERENCES teachingLoad(`id`)
+    REFERENCES fsr(`id`)
 );
 
-CREATE TABLE IF NOT EXISTS `timeslot`(
+CREATE TABLE `timeslot`(
+  `timeslotID` INT NOT NULL AUTO_INCREMENT,
   `subjectID` INT NOT NULL,
-  `day` varchar(10) NOT NULL,
-  `time` varchar(10) NOT NULL,
+  `day` VARCHAR(10) NOT NULL,
+  `time` TIME NOT NULL, -- TIME FORMAT HH:MM:SS
   CONSTRAINT `timeslot_subject_fk`
     FOREIGN KEY (`subjectID`)
     REFERENCES subject(`subjectID`)
+  ON DELETE CASCADE,
+  CONSTRAINT `timeslot_pk`
+    PRIMARY KEY (timeslotID)
 );
 
   -- study load, course, courseSched
@@ -89,11 +96,13 @@ CREATE TABLE IF NOT EXISTS `timeslot`(
 CREATE TABLE `studyLoad`(
   `degree` VARCHAR (50) NOT NULL,
   `university` VARCHAR (50) NOT NULL,
-  `totalSLcredits` INT (10) NOT NULL,
+  `totalSLcredits` INT (10) DEFAULT 0,
   `id` INT NOT NULL,
   CONSTRAINT `studyLoad_fsr_fk`
     FOREIGN KEY (`id`)
-    REFERENCES fsr(`id`)
+    REFERENCES fsr(`id`),
+  CONSTRAINT `studyLoad_pk`
+    PRIMARY KEY(`id`)
 );
 
 CREATE TABLE `course`(
@@ -106,17 +115,21 @@ CREATE TABLE `course`(
   CONSTRAINT `course_studyLoad_fk`
     FOREIGN KEY (`id`)
     REFERENCES fsr(`id`),
-  CONSTRAINT `studyLoad_pk`
+  CONSTRAINT `course_pk`
     PRIMARY KEY (`courseID`)
 );
 
 CREATE TABLE `courseSched`(
+  `courseSchedID` INT NOT NULL AUTO_INCREMENT,
   `courseID` INT NOT NULL,
   `day` VARCHAR (30) NOT NULL,
-  `time` VARCHAR (30) NOT NULL,
-  CONSTRAINT`courseSched_course_fk`
+  `time` TIME NOT NULL, -- TIME FORMAT HH:MM:SS
+  CONSTRAINT `courseSched_course_fk`
     FOREIGN KEY (`courseID`)
     REFERENCES course(`courseID`)
+    ON DELETE CASCADE,
+  CONSTRAINT `courseSched_pk`
+    PRIMARY KEY (courseSchedID)
 );
 
 -- Consultation hours and CH Timeslot
@@ -133,16 +146,20 @@ CREATE TABLE `consultationHours`(
 );
 
 CREATE TABLE `chTimeslot`(
+  `chTimeslotID`INT NOT NULL AUTO_INCREMENT,
   `id` INT NOT NULL,
   `chID` INT NOT NULL,
   `day` varchar(10) NOT NULL,
-  `time` varchar(10) NOT NULL,
+  `time` TIME NOT NULL, -- TIME FORMAT HH:MM:SS
   CONSTRAINT `chTimeslot_consultationHours_fk`
     FOREIGN KEY (`chID`)
     REFERENCES consultationHours(`chID`),
   CONSTRAINT `chTimeslot_consultationHours_fsr_fk`
     FOREIGN KEY (`id`)
     REFERENCES consultationHours(`id`)
+    ON DELETE CASCADE,
+  CONSTRAINT `chTimeslot_pk`
+    PRIMARY KEY(chTimeslotID)
 );
 
 -- Professorial Chair or Faculty Grant or Nominee (Award)
@@ -155,8 +172,8 @@ CREATE TABLE `award`(
   `collegeHasNominated` VARCHAR (50) NOT NULL,
   `recipientOrNominee` VARCHAR (50) NOT NULL,
   `professionalChair` VARCHAR (50) NOT NULL,
-  `approvedStartDate` VARCHAR (50) NOT NULL,
-  `endDate` VARCHAR (50) NOT NULL,
+  `approvedStartDate` DATE NOT NULL, --                   DATE format: YYYY-MM-DD
+  `endDate` DATE NOT NULL, --                             DATE format: YYYY-MM-DD
   CONSTRAINT `award_fsr_fk`
     FOREIGN KEY (`id`)
     REFERENCES fsr(`id`),
@@ -165,26 +182,29 @@ CREATE TABLE `award`(
 );
 -- Limited Practice of Profession
 
-CREATE TABLE IF NOT EXISTS `limitedPracticeOfProf`(
+CREATE TABLE `limitedPracticeOfProf`(
+  `limitedPracticeOfProfID` INT NOT NULL AUTO_INCREMENT, 
   `id` INT NOT NULL,
-  askedPermission VARCHAR (10) NOT NULL,  -- YES / NO
-  Date VARCHAR (50),
+  `askedPermission` VARCHAR (10) NOT NULL,  -- YES / NO
+  `date` DATE,  --                   DATE format: YYYY-MM-DD
   CONSTRAINT `limitedPracticeOfProf_fsr_fk`
     FOREIGN KEY (`id`)
-    REFERENCES fsr(`id`)
+    REFERENCES fsr(`id`),
+  CONSTRAINT `limitedPracticeOfProf_pk`
+    PRIMARY KEY (`limitedPracticeOfProfID`) 
 );
 
-CREATE TABLE IF NOT EXISTS `extensionAndCommunityService`(
+CREATE TABLE `extensionAndCommunityService`(
   `id` INT NOT NULL, 
-  extAndCommServiceID INT NOT NULL AUTO_INCREMENT,
-  participant INT(2) NOT NULL,
-  role VARCHAR (50) NOT NULL,
-  hours INT (50) NOT NULL,
-  title VARCHAR (50) NOT NULL,
-  creditUnit INT (50) NOT NULL,
-  type VARCHAR (50) NOT NULL,
-  startDate VARCHAR (50) NOT NULL,
-  endDate VARCHAR (50) NOT NULL,
+  `extAndCommServiceID` INT NOT NULL AUTO_INCREMENT,
+  `participant` VARCHAR (50) NOT NULL,
+  `role` VARCHAR (50) NOT NULL,
+  `hours` INT (3) NOT NULL,
+  `title` VARCHAR (50) NOT NULL,
+  `creditUnit` INT (2) NOT NULL,
+  `type` VARCHAR (50) NOT NULL,
+  `startDate` DATE NOT NULL, --                   DATE format: YYYY-MM-DD
+  `endDate` DATE NOT NULL, --                     DATE format: YYYY-MM-DD
   CONSTRAINT `extensionAndCommunityService_fsr_fk`
     FOREIGN KEY (`id`)
     REFERENCES fsr(`id`),
@@ -203,7 +223,7 @@ CREATE TABLE `adminWork`(
   CONSTRAINT `adminWork_fsr_fk`
     FOREIGN KEY (`id`)
     REFERENCES fsr(`id`),
-  CONSTRAINT `extAndCommService_pk` 
+  CONSTRAINT `adminWork_pk` 
     PRIMARY KEY (`adminWorkID`) 
 );
 
@@ -224,14 +244,18 @@ CREATE TABLE `creativeWork`(
 );
 
 CREATE TABLE `cworkCoAuthor`(
+  `cworkCoAuthorID` INT NOT NULL AUTO_INCREMENT,
   `creativeWorkID` INT NOT NULL,
   `userID` INT NOT NULL,
   CONSTRAINT `cworkCoAuthor_creativeWork_fk`
     FOREIGN KEY (`creativeWorkID`)
-    REFERENCES creativeWork(`creativeWorkID`),
+    REFERENCES creativeWork(`creativeWorkID`)
+  ON DELETE CASCADE,
   CONSTRAINT `cworkCoAuthor_user_fk`
     FOREIGN KEY (`userID`)
-    REFERENCES user(`userID`)
+    REFERENCES user(`userID`),
+  CONSTRAINT `cworkCoAuthor_pk`
+    PRIMARY KEY (`cworkCoAuthorID`)
 );
 
 
@@ -243,8 +267,8 @@ CREATE TABLE `research`(
   `type` VARCHAR (30) NOT NULL, -- PROPOSAL / IMPLEMENTATION
   `role` VARCHAR (30) NOT NULL,
   `title` VARCHAR (50) NOT NULL,
-  `startDate` DATE NOT NULL,
-  `endDate` DATE NOT NULL,
+  `startDate` DATE NOT NULL, --                   DATE format: YYYY-MM-DD
+  `endDate` DATE NOT NULL, --                     DATE format: YYYY-MM-DD
   `funding` VARCHAR (30) NOT NULL,
   `approvedUnits` VARCHAR (30) NOT NULL,
   CONSTRAINT `research_fsr_fk`
@@ -256,15 +280,81 @@ CREATE TABLE `research`(
 
 
 CREATE TABLE rCoAuthor(
+  `rCoAuthorID` INT NOT NULL AUTO_INCREMENT,
   `researchID` INT NOT NULL,
   `userID` INT NOT NULL,
   CONSTRAINT `rCoAuthor_research_fk`
     FOREIGN KEY (`researchID`)
-    REFERENCES research(`researchID`),
+    REFERENCES research(`researchID`)
+  ON DELETE CASCADE,
   CONSTRAINT `rCoAuthor_user_fk`
+    FOREIGN KEY (`userID`)
+    REFERENCES user(`userID`),
+  CONSTRAINT `rCoAuthor_pk`
+    PRIMARY KEY (`rCoAuthorID`)
+);
+
+CREATE TABLE `notification`(
+  `notificationID` INT NOT NULL AUTO_INCREMENT,
+  `senderID` INT NOT NULL,
+  `receiverID` INT NOT NULL,
+  `message` varchar(1000) NOT NULL,
+  `dateSent` DATE NOT NULL, --                   DATE format: YYYY-MM-DD
+  `timeSent` TIME NOT NULL,
+  `isResolved` BOOLEAN,
+  CONSTRAINT `notification_pk`
+    PRIMARY KEY(`notificationID`),
+  CONSTRAINT `notification_user_fk`
+    FOREIGN KEY (`senderID`)
+    REFERENCES user(`userID`),
+  CONSTRAINT `notificationReceived_user_fk`
+    FOREIGN KEY (`receiverID`)
+    REFERENCES user(`userID`)
+);
+
+CREATE TABLE announcement(
+   `announcementID` INT NOT NULL AUTO_INCREMENT,
+   `userID` INT NOT NULL, -- userID of who sent the announcement 
+   `title` VARCHAR (512) NOT NULL,
+   `body` TEXT(10000) NOT NULL,
+   `isResolved` BOOLEAN DEFAULT 0,
+   CONSTRAINT `announcement_pk`
+     PRIMARY KEY(`announcementID`),
+   CONSTRAINT `announcement_user_fk`
     FOREIGN KEY (`userID`)
     REFERENCES user(`userID`)
 );
+
+-- Trigger for Teaching Load of FSR
+
+CREATE TRIGGER insert_teachingLoadCreds 
+AFTER INSERT ON subject
+FOR EACH ROW 
+  UPDATE fsr 
+    SET teachingLoadCreds = teachingLoadCreds + NEW.teachingLoadCreds
+    WHERE id = NEW.id AND NEW.subjectID = NEW.subjectID;
+
+CREATE TRIGGER delete_teachingLoadCreds 
+BEFORE DELETE ON subject
+FOR EACH ROW 
+UPDATE fsr 
+  SET teachingLoadCreds = teachingLoadCreds - OLD.teachingLoadCreds;
+
+
+-- Trigger for Study Load of FSR 
+
+CREATE TRIGGER insert_totalSLcredits 
+AFTER INSERT ON course
+FOR EACH ROW 
+  UPDATE studyLoad 
+    SET totalSLcredits = totalSLcredits + NEW.credit
+    WHERE id = NEW.id AND NEW.courseID = NEW.courseID;
+
+CREATE TRIGGER delete_totalSLcredits 
+BEFORE DELETE ON course
+FOR EACH ROW 
+UPDATE studyLoad 
+  SET totalSLcredits = totalSLcredits - OLD.credit;
 
 
 -- Privileges
