@@ -6,6 +6,7 @@ import fsrRouter from './entities/fsr/router';
 import serviceRouter from './entities/extensionAndCommunityService/router';
 import userRouter from './entities/user/router';
 import researchRouter from './entities/research/router';
+import rCoAuthorRouter from './entities/rCoAuthor/router';
 
 const router = Router();
 
@@ -37,6 +38,7 @@ router.use(serviceRouter);
 // });]
 
 router.use(researchRouter);
+router.use(rCoAuthorRouter);
 
 // });
 router.use(userRouter);

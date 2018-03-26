@@ -14,8 +14,6 @@ const researchAttributes = [
   'approvedUnits',
 ];
 
-const rCoAuthorAttributes = ['rCoAuthorID', 'userID', 'researchID'];
-
 const searchFields = [
   'type',
   'role',
@@ -35,35 +33,12 @@ export const addResearch = research => {
   });
 };
 
-export const addrCoAuthor = rCoAuthor => {
-  return new Promise((resolve, reject) => {
-    db.query(Query.addrCoAuthor, { ...rCoAuthor }, (err, results) => {
-      if (err) return reject(500);
-      return resolve(results.insertId);
-    });
-  });
-};
-
 export const updateResearch = ({ researchID }, research) => {
   return new Promise((resolve, reject) => {
     if (!research) return reject(500);
     db.query(
       Query.updateResearch(filtered(research, researchAttributes)),
       { researchID, ...research },
-      (err, results) => {
-        if (err) return reject(500);
-        return resolve(results.insertId);
-      },
-    );
-  });
-};
-
-export const updaterCoAuthor = ({ rCoAuthorID }, rCoAuthor) => {
-  return new Promise((resolve, reject) => {
-    if (!rCoAuthor) return reject(500);
-    db.query(
-      Query.updaterCoAuthor(filtered(rCoAuthor, rCoAuthorAttributes)),
-      { rCoAuthorID, ...rCoAuthor },
       (err, results) => {
         if (err) return reject(500);
         return resolve(results.insertId);
@@ -100,26 +75,20 @@ export const getResearches = research => {
   });
 };
 
-export const getrCoAuthor = ({ rCoAuthorID }) => {
+export const getTotalResearches = research => {
   return new Promise((resolve, reject) => {
-    db.query(Query.getrCoAuthor, { rCoAuthorID }, (err, results) => {
+    db.query(Query.getTotalResearches, { ...research }, (err, results) => {
       if (err) return reject(500);
       return resolve(results);
     });
   });
 };
 
-export const getrCoAuthors = rCoAuthor => {
+export const getTotalResearchesByFSR = ({ id }, research) => {
   return new Promise((resolve, reject) => {
     db.query(
-      Query.getrCoAuthors(
-        filtered(rCoAuthor, rCoAuthorAttributes),
-        rCoAuthor.sortBy,
-      ),
-      {
-        field: 'researchID',
-        ...escapeSearch(rCoAuthor, searchFields, rCoAuthor.limit),
-      },
+      Query.getTotalResearchesByFSR,
+      { id, ...research },
       (err, results) => {
         if (err) return reject(500);
         return resolve(results);
@@ -131,15 +100,6 @@ export const getrCoAuthors = rCoAuthor => {
 export const deleteResearch = ({ researchID }) => {
   return new Promise((resolve, reject) => {
     db.query(Query.deleteResearch, { researchID }, (err, results) => {
-      if (err) return reject(500);
-      return resolve();
-    });
-  });
-};
-
-export const deleterCoAuthor = ({ rCoAuthorID }) => {
-  return new Promise((resolve, reject) => {
-    db.query(Query.deleterCoAuthor, { rCoAuthorID }, (err, results) => {
       if (err) return reject(500);
       return resolve();
     });

@@ -72,60 +72,6 @@ router.post('/research/', async (req, res) => {
 });
 
 /**
- * @api {post} /rCoAuthor addrCoAuthor
- * @apiGroup rCoAuthor
- * @apiName addrCoAuthor
- *
- * @apiParam (Body Params) {String} userID of user
- * @apiParam (Body Params) {String} researchID ID of research
- * @apiParam (Body Params) {String} rCoAuthorID ID of rCoAuthor
- *
- * @apiSuccess {Object} rCoAuthor Successfully Research with CoAuthor added
- * @apiSuccess {String} rCoAuthor.rCoAuthorID rCoAuthorID of rCoAuthor
- *
- * @apiSuccessExample {json} Success-Response:
- *   HTTP/1.1 200 OK
- *   {
- *     "data": {
- *        "status": 200;
- *        "message": 'Successfully added research with coAuthor'
- *     }
- *   }
- *
- * @apiError (Error 500) {String[]} errors List of errors
- * @apiError (Error 500) {String} errors.message Error message
- * @apiErrorExample {json} Error-Response:
- *   HTTP/1.1 500 Internal Server Error
- *   {
- *     "status": 500,
- *     "message": "Internal server error"
- *   }
- */
-
-router.post('/rCoAuthor/', async (req, res) => {
-  try {
-    const rCoAuthorID = await Ctrl.addrCoAuthor(req.body);
-
-    const rCoAuthor = await Ctrl.getrCoAuthor({ rCoAuthorID });
-    console.log(req.body.rCoAuthor);
-    console.log(rCoAuthorID);
-    res.status(200).json({
-      status: 200,
-      message: 'Successfully created research with coAuthor',
-      data: rCoAuthor,
-    });
-  } catch (status) {
-    let message = '';
-    switch (status) {
-      case 500:
-        message = 'Internal server error';
-        break;
-    }
-    res.status(status).json({ status, message });
-  }
-});
-
-/**
  * @api {put} /research/:researchID updateResearch
  * @apiGroup Research
  * @apiName updateResearch
@@ -184,61 +130,6 @@ router.put('/research/:researchID', async (req, res) => {
     switch (status) {
       case 404:
         message = 'Research not found';
-        break;
-      case 500:
-        message = 'Internal server error';
-        break;
-    }
-    res.status(status).json({ status, message });
-  }
-});
-
-/**
- * @api {put} /rCoAuthor/:rCoAuthorID updaterCoAuthor
- * @apiGroup rCoAuthor
- * @apiName updaterCoAuthor
- *
- * @apiParam (Body Params) {String} userID of user
- * @apiParam (Body Params) {String} researchID ID of research
- * @apiParam (Body Params) {String} rCoAuthorID ID of rCoAuthor
- *
- * @apiSuccess {Object} rCoAuthor Successfully updated research with coAuthor
- * @apiSuccess {String} rCoAuthor.rCoAuthorID rCoAuthorID of rCoAuthor
- *
- * @apiSuccessExample {json} Success-Response:
- *   HTTP/1.1 200 OK
- *   {
- *     "data": {
- *        "status": 200;
- *        "message": 'Successfully updated research with coAuthor'
- *     }
- *   }
- *
- * @apiError (Error 500) {String[]} errors List of errors
- * @apiError (Error 500) {String} errors.message Error message
- * @apiErrorExample {json} Error-Response:
- *   HTTP/1.1 500 Internal Server Error
- *   {
- *     "status": 500,
- *     "message": "Internal server error"
- *   }
- */
-
-router.put('/rCoAuthor/:rCoAuthorID', async (req, res) => {
-  try {
-    await Ctrl.updaterCoAuthor(req.params, req.body);
-    const rCoAuthor = await Ctrl.getrCoAuthor(req.params);
-
-    res.status(200).json({
-      status: 200,
-      message: 'Successfully updated research with coAuthor',
-      data: rCoAuthor,
-    });
-  } catch (status) {
-    let message = '';
-    switch (status) {
-      case 404:
-        message = 'Research with coAuthor not found';
         break;
       case 500:
         message = 'Internal server error';
@@ -321,63 +212,6 @@ router.delete('/research/:researchID', async (req, res) => {
 });
 
 /**
- * @api {delete} /rCoAuthor/:rCoAutorID deleterCoAuthor
- * @apiGroup rCoAuthor
- * @apiName deleterCoAuthor
- *
- * @apiParam (Body Params) {String} userID of user
- * @apiParam (Body Params) {String} researchID ID of research
- * @apiParam (Body Params) {String} rCoAuthorID ID of rCoAuthor
- *
- * @apiSuccess {Object} rCoAuthor Successfully deleted research with coAuthor
- * @apiSuccess {String} rCoAuthor.rCoAuthorID rCoAuthorID of rCoAuthor
- *
- *
- * @apiSuccessExample {json} Success-Response:
- *   HTTP/1.1 200 OK
- *   {
- *     "data": {
- *        "status": 200;
- *        "message": 'Successfully deleted research with coAuthor'
- *     }
- *   }
- *
- * @apiError (Error 500) {String[]} errors List of errors
- * @apiError (Error 500) {String} errors.message Error message
- * @apiErrorExample {json} Error-Response:
- *   HTTP/1.1 500 Internal Server Error
- *   {
- *     "status": 500,
- *     "message": "Internal server error"
- *   }
- */
-
-router.delete('/rCoAuthor/:rCoAuthorID', async (req, res) => {
-  try {
-    const rCoAuthorID = await Ctrl.deleterCoAuthor(req.body);
-    const rCoAuthor = await Ctrl.getrCoAuthor({ rCoAuthorID });
-
-    console.log(rCoAuthor);
-    res.status(200).json({
-      status: 200,
-      message: 'Successfully deleted research with coAuthor',
-      data: rCoAuthor,
-    });
-  } catch (status) {
-    let message = '';
-    switch (status) {
-      case 404:
-        message = 'Research with coAuthor not found';
-        break;
-      case 500:
-        message = 'Internal server error';
-        break;
-    }
-    res.status(status).json({ status, message });
-  }
-});
-
-/**
  * @api {get} /research/:researchID getResearch
  * @apiGroup Research
  * @apiName getResearch
@@ -435,61 +269,6 @@ router.get('/research/:researchID', async (req, res) => {
     switch (status) {
       case 404:
         message = 'Research not found';
-        break;
-      case 500:
-        message = 'Internal server error';
-        break;
-    }
-    res.status(status).json({ status, message });
-    return research;
-  }
-});
-
-/**
- * @api {get} /rCoAuthor/:rCoAuthorID getrCoAuthor
- * @apiGroup rCoAuthor
- * @apiName getrCoAuthor
- *
- * @apiParam (Body Params) {String} userID of user
- * @apiParam (Body Params) {String} researchID ID of research
- * @apiParam (Body Params) {String} rCoAuthorID ID of rCoAuthor
- *
- * @apiSuccess {Object} rCoAuthor Successfully fetched research with coAuthor
- * @apiSuccess {String} rCoAuthor.rCoAuthorID rCoAuthorID of rCoAuthor
- *
- * @apiSuccessExample {json} Success-Response:
- *   HTTP/1.1 200 OK
- *   {
- *     "data": {
- *        "status": 200;
- *        "message": 'Successfully fetched research with coAuthor'
- *     }
- *   }
- *
- * @apiError (Error 500) {String[]} errors List of errors
- * @apiError (Error 500) {String} errors.message Error message
- * @apiErrorExample {json} Error-Response:
- *   HTTP/1.1 500 Internal Server Error
- *   {
- *     "status": 500,
- *     "message": "Internal server error"
- *   }
- */
-
-router.get('/rCoAuthor/:rCoAuthorID', async (req, res) => {
-  try {
-    const rCoAuthor = await Ctrl.getrCoAuthor(req.params);
-    console.log(rCoAuthor);
-    res.status(200).json({
-      status: 200,
-      message: 'Successfully fetched research with coAuthor',
-      data: rCoAuthor,
-    });
-  } catch (status) {
-    let message = '';
-    switch (status) {
-      case 404:
-        message = 'Research with coAuthor not found';
         break;
       case 500:
         message = 'Internal server error';
@@ -572,55 +351,112 @@ router.get('/research/', async (req, res) => {
 });
 
 /**
- * @api {get} /rCoAuthor getrCoAuthors
- * @apiGroup rCoAuthor
- * @apiName getrCoAuthors
- *
- * @apiParam (Body Params) {String} userID of user
- * @apiParam (Body Params) {String} researchID ID of research
- * @apiParam (Body Params) {String} rCoAuthorID ID of rCoAuthor
- *
- * @apiSuccess {Object} rCoAuthor Successfully fetched researches with coAuthor
- * @apiSuccess {String} rCoAuthor.rCoAuthorID rCoAuthorID of rCoAuthor
- *
+ * @api {get} /researchTotal/ getTotalResearches
+ * @apiGroup Research
+ * @apiName getTotalResearches
+ * *
+ * @apiSuccess {Integer} total total number of researches
  *
  * @apiSuccessExample {json} Success-Response:
  *   HTTP/1.1 200 OK
- *   {
- *     "data": {
- *        "status": 200;
- *        "message": 'Successfully fetched researches with coAuthor'
- *     }
- *   }
- *
- * @apiError (Error 500) {String[]} errors List of errors
- * @apiError (Error 500) {String} errors.message Error message
+ *  {
+    "status": 200,
+    "message": "Successfully fetched researches count",
+    "data": [
+        {
+            "total": 11
+        }
+    ]
+  }
+ * @apiError (Error 500) {Integer} errors.status 500
+ * @apiError (Error 500) {String} errors.message Internal server error
+ * @apiError (Error 404) {Integer} errors.status 400
+ * @apiError (Error 404) {String} errors.message Researches not found
  * @apiErrorExample {json} Error-Response:
  *   HTTP/1.1 500 Internal Server Error
  *   {
  *     "status": 500,
  *     "message": "Internal server error"
  *   }
+ *
+ * HTTP/1.1 404 Subjects not found
+ * {
+ *   "status": 404,
+ *   "message": "Researches not found"
+ * }
  */
 
-router.get('/rCoAuthor/', async (req, res) => {
+router.get('/researchTotal/', async (req, res) => {
   try {
-    const rCoAuthors = await Ctrl.getrCoAuthors(req.query);
-
+    const totalResearches = await Ctrl.getTotalResearches(req.query);
     res.status(200).json({
       status: 200,
-      message: 'Successfully fetched researches with coAuthor',
-      data: rCoAuthors,
-      total: rCoAuthors.length,
-      limit: req.query.limit,
-      page: req.query.page,
-      pages: Math.ceil(rCoAuthors.length / req.query.limit),
+      message: 'Successfully fetched researches count',
+      data: totalResearches,
     });
   } catch (status) {
     let message = '';
     switch (status) {
       case 404:
-        message = 'Research with coAuthor not found';
+        message = 'Researches not found';
+        break;
+      case 500:
+        message = 'Internal server error';
+        break;
+    }
+    res.status(status).json({ status, message });
+  }
+});
+
+/**
+ * @api {get} /researchTotalByFSR/:id getTotalResearchesByFSR
+ * @apiGroup Research
+ * @apiName getTotalResearchesByFSR
+ * *
+ * @apiSuccess {Integer} total total number of researches by fsr
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *   HTTP/1.1 200 OK
+ *  {
+      "status": 200,
+      "message": "Successfully fetched researches by fsr count",
+      "data": [
+          {
+              "total": 11
+          }
+      ]
+    }
+ * @apiError (Error 500) {Integer} errors.status 500
+ * @apiError (Error 500) {String} errors.message Internal server error
+ * @apiError (Error 404) {Integer} errors.status 400
+ * @apiError (Error 404) {String} errors.message Researches by fsr not found
+ * @apiErrorExample {json} Error-Response:
+ *   HTTP/1.1 500 Internal Server Error
+ *   {
+ *     "status": 500,
+ *     "message": "Internal server error"
+ *   }
+ *
+ * HTTP/1.1 404 Subjects not found
+ * {
+ *   "status": 404,
+ *   "message": "Researches by fsr not found"
+ * }
+ */
+
+router.get('/researchTotalByFSR/:id', async (req, res) => {
+  try {
+    const totalResearchesByFSR = await Ctrl.getTotalResearchesByFSR(req.params);
+    res.status(200).json({
+      status: 200,
+      message: 'Successfully fetched researches by fsr count',
+      data: totalResearchesByFSR,
+    });
+  } catch (status) {
+    let message = '';
+    switch (status) {
+      case 404:
+        message = 'Researches by fsr not found';
         break;
       case 500:
         message = 'Internal server error';
