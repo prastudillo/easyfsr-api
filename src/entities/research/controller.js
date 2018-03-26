@@ -75,25 +75,21 @@ export const getResearches = research => {
   });
 };
 
-export const getTotalResearches = research => {
+export const getTotalResearches = () => {
   return new Promise((resolve, reject) => {
-    db.query(Query.getTotalResearches, { ...research }, (err, results) => {
+    db.query(Query.getTotalResearches, (err, results) => {
       if (err) return reject(500);
       return resolve(results);
     });
   });
 };
 
-export const getTotalResearchesByFSR = ({ id }, research) => {
+export const getTotalResearchesByFSR = ({ id }) => {
   return new Promise((resolve, reject) => {
-    db.query(
-      Query.getTotalResearchesByFSR,
-      { id, ...research },
-      (err, results) => {
-        if (err) return reject(500);
-        return resolve(results);
-      },
-    );
+    db.query(Query.getTotalResearchesByFSR, { id }, (err, results) => {
+      if (err) return reject(500);
+      return resolve(results);
+    });
   });
 };
 
