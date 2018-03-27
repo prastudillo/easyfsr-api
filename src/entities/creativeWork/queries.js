@@ -31,6 +31,13 @@ export const deleteCreativeWork = `
 	WHERE creativeWorkID = :creativeWorkID AND id = :id
 `;
 
+export const getAllCreativeWork = query => `
+	SELECT * FROM creativeWork
+	NATURAL JOIN cworkCoAuthor
+	ORDER BY id ASC
+	LIMIT 10
+`;
+
 export const getCreativeWorks = (query, sortBy) => `
 	SELECT * FROM creativeWork ${
     query.length ? `WHERE ${formatQueryParams(query, 'get')}` : ''

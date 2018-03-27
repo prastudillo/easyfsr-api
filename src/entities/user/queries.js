@@ -49,7 +49,9 @@ export const getUsers = (query, sortBy) => `
   SELECT * FROM user WHERE isArchived = 0 ${
     query.length ? `AND ${formatQueryParams(query, 'get')}` : ''
   } 
-  ORDER BY [field] ${sortBy === 'DESC' ? 'DESC' : 'ASC'} LIMIT :limit
+  ORDER BY [field] ${
+    sortBy === 'DESC' ? 'DESC' : 'ASC'
+  } LIMIT :limit OFFSET :offset
 `;
 
 export const getTotalUsers = `

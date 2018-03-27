@@ -2,9 +2,22 @@ import db from '../../database/index';
 import * as Query from './queries';
 import { filtered, escapeSearch } from '../../utils';
 
-const fsrAttributes = ['userID', 'acadYear', 'semester', 'isChecked'];
+const fsrAttributes = [
+  'userID',
+  'acadYear',
+  'semester',
+  'isChecked',
+  'teachingLoadCreds',
+];
 
-const searchFields = ['userID', 'acadYear', 'semester', 'isChecked'];
+const searchFields = [
+  'userID',
+  'acadYear',
+  'semester',
+  'isChecked',
+  'teachingLoadCreds',
+];
+
 
 export const addFSR = fsr => {
   return new Promise((resolve, reject) => {
