@@ -1,4 +1,4 @@
 export const getUser = `
   SELECT * FROM user
-  WHERE emailAddress = :emailAddress
+  WHERE emailAddress = :emailAddress AND isArchived = 0
 `;

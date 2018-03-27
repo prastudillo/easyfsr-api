@@ -46,5 +46,23 @@ export const getExtensionAndCommunityServices = (query, sortBy) => `
     query.length ? `WHERE ${formatQueryParams(query, 'get')}` : ''
   }
   ORDER BY [field] ${sortBy === 'DESC' ? 'DESC' : 'ASC'} LIMIT :limit
-
 `;
+
+export const getTotalExtensionAndCommunityServices = `
+  SELECT count(*) as total FROM extensionAndCommunityService
+`;
+
+export const getTotalExtensionAndCommunityServicesByFSR = `
+  SELECT count(*) as total FROM extensionAndCommunityService WHERE id = :id 
+`;
+
+/*
+
+// Supports single or multiple rows delete
+
+export const deleteExtensionAndCommunityService = query => `
+  DELETE FROM extensionAndCommunityService
+  ${query.length ? `WHERE ${formatQueryParams(query)}` : ''}
+`;
+
+*/

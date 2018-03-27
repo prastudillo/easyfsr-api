@@ -1,22 +1,28 @@
 import { formatQueryParams } from '../../utils';
 
 export const addCourse = `
-	INSERT INTO course 
-	 ( id, 
-    courseNumber, 
-    courseID, 
-    hoursPerWeek, 
-    school, 
-    credit ) 
-	VALUES ( 
-    :id, 
-    :courseNumber, 
-    :courseID, 
-    :hoursPerWeek, 
-    :school, 
-    :credit )`;
+	INSERT INTO course (
+		id,
+		courseNumber,
+		courseID,
+		hoursPerWeek,
+		school,
+		credit
+	)
+	VALUES (
+		:id,
+		:courseNumber,
+		:courseID,
+		:hoursPerWeek,
+		:school,
+		:credit
+	)
+`;
 
-export const deleteCourse = `delete from course where courseID = :courseID`;
+
+export const deleteCourse = `
+	DELETE FROM course 
+  where courseID = :courseID`;
 
 export const getCourses = (query, sortBy) => `
   SELECT * FROM course ${
@@ -24,11 +30,17 @@ export const getCourses = (query, sortBy) => `
   }
   ORDER BY [field] ${sortBy === 'DESC' ? 'DESC' : 'ASC'} LIMIT :limit
 `;
-export const getCourse = `SELECT * FROM course WHERE courseID=:courseID`;
+export const getCourse = `
+  SELECT * FROM course 
+  WHERE courseID=:courseID
+`;
 
-export const updateCourse = course =>
-  ` UPDATE course 
-  SET  ${formatQueryParams(course, 'update')} WHERE courseID=:courseID`;
+export const updateCourse = course =>  ` 
+  UPDATE course SET  
+    ${formatQueryParams(course, 'update')} 
+  WHERE courseID=:courseID
+`;
 
 export const getTotalCourses = `
-  SELECT count(*) as total FROM course`;
+  SELECT count(*) as total FROM course
+`;

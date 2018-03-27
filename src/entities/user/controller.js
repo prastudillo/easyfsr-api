@@ -7,6 +7,7 @@ const userAttributes = [
   'firstName',
   'middleName',
   'lastName',
+  'password',
   'committee',
   'isHead',
   'officeNumber',
@@ -57,16 +58,25 @@ export const deleteUser = ({ userID }) => {
   });
 };
 
-export const getUser = ({ userID }) => {
+export const getUserByUserID = ({ userID }) => {
   return new Promise((resolve, reject) => {
-    db.query(Query.getUser, { userID }, (err, results) => {
+    db.query(Query.getUserByUserID, { userID }, (err, results) => {
       if (err) return reject(500);
       else if (!results.length) return reject(404);
-      return resolve(results);
+      return resolve(results[0]);
     });
   });
 };
 
+export const getUserByEmpID = ({ employeeID }) => {
+  return new Promise((resolve, reject) => {
+    db.query(Query.getUserByEmpID, { employeeID }, (err, results) => {
+      if (err) return reject(500);
+      else if (!results.length) return reject(404);
+      return resolve(results[0]);
+    });
+  });
+};
 export const getUsers = user => {
   return new Promise((resolve, reject) => {
     db.query(
@@ -77,5 +87,14 @@ export const getUsers = user => {
         return resolve(results);
       },
     );
+  });
+};
+
+export const getTotalUsers = () => {
+  return new Promise((resolve, reject) => {
+    db.query(Query.getTotalUsers, (err, results) => {
+      if (err) return reject(500);
+      return resolve(results[0]);
+    });
   });
 };

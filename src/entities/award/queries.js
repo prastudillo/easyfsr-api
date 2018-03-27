@@ -1,18 +1,20 @@
 import { formatQueryParams } from '../../utils';
 
 export const addAward = `
-  INSERT INTO award ( 
+  INSERT INTO award (
     id,
+    awardID,
     grantF,
     chairGrantTitle,
     collegeHasNominated,
     recipientOrNominee,
     professionalChair,
     approvedStartDate,
-    endDate 
+    endDate
   )
-  VALUES ( 
+  VALUES (
     :id,
+    DEFAULT,
     :grantF,
     :chairGrantTitle,
     :collegeHasNominated,
@@ -45,3 +47,13 @@ export const getAwards = (query, sortBy) => `
  }
   ORDER BY [field] ${sortBy === 'DESC' ? 'DESC' : 'ASC'} LIMIT :limit
 `;
+
+/*
+// Supports single or multiple rows of delete 
+
+export const deleteAward = `
+  DELETE FROM award
+  ${query.length ? `WHERE ${formatQueryParams(query)}` : ''}
+`;
+
+*/

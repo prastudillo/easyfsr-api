@@ -173,9 +173,9 @@ router.get('/service', async (req, res) => {
       message: 'Successfully fetched services',
       data: services,
       total: services.length,
-      limit: req.query.limit || 10,
+      limit: req.query.limit || 12,
       page: req.query.page || 1,
-      pages: Math.ceil(services.length / (req.query.limit || 10)),
+      pages: Math.ceil(services.length / (req.query.limit || 12)),
     });
   } catch (status) {
     let message = '';
