@@ -11,11 +11,11 @@ const courseAttributes = [
   'credit',
 ];
 
-const searchFields = ['courseNumber', 'courseID', 'school', 'credit'];
+const searchFields = ['id', 'courseNumber', 'hoursPerWeek', 'school', 'credit'];
 
 export const addCourse = course => {
   return new Promise((resolve, reject) => {
-    db.query(Query.addCourse, { ...course }, (err, results) => {
+    db.query(Query.addCourse, { course }, (err, results) => {
       if (err) return reject(500);
       return resolve(results.insertId);
     });

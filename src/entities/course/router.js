@@ -183,7 +183,7 @@ router.put('/course/:courseID', async (req, res) => {
  *     }
  *   }
  *
- * @apiError (Error 500) {String[]} errors List of errors
+ * @apiError (Error 500) {String} errors List of errors
  * @apiError (Error 500) {String} errors.message Error message
  * @apiErrorExample {json} Error-Response:
  *   HTTP/1.1 500 Internal Server Error
@@ -258,7 +258,7 @@ router.delete('/course/:courseID', async (req, res) => {
  *     }
  *   }
  *
- * @apiError (Error 500) {String[]} errors List of errors
+ * @apiError (Error 500) {String} errors List of errors
  * @apiError (Error 500) {String} errors.message Error message
  * @apiErrorExample {json} Error-Response:
  *   HTTP/1.1 500 Internal Server Error
@@ -327,7 +327,7 @@ router.get('/course/:courseID', async (req, res) => {
         ]
     }
  *
- * @apiError (Error 500) {String[]} errors List of errors.
+ * @apiError (Error 500) {String} errors List of errors.
  * @apiError (Error 500) {String} errors.message Error message.
  * @apiErrorExample {json} Error-Response:
  *    HTTP/1.1 500 Internal Server Error
