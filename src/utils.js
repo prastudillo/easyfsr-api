@@ -11,6 +11,7 @@ export const filtered = (payload = {}, attributes) =>
 
 export const escapeSearch = (query, appendList, limit = 12) => {
   query.limit = parseInt(limit);
+  query.offset = (parseInt(query.page) - 1) * limit || 0;
 
   appendList.forEach(key => {
     if (query.hasOwnProperty(key)) {

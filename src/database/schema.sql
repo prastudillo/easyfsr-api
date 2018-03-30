@@ -19,7 +19,7 @@ CREATE TABLE user(
   lastName VARCHAR (50) NOT NULL,
   committee VARCHAR (30),
   isHead BOOLEAN,      
-  officeNumber VARCHAR (30) NOT NULL, 
+  officeNumber VARCHAR (30), 
   contractType VARCHAR (40) NOT NULL, -- FULL-TIME / PART-TIME
   emailAddress VARCHAR (40) NOT NULL,
   rank VARCHAR (30),
@@ -82,7 +82,8 @@ CREATE TABLE `timeslot`(
   `timeslotID` INT NOT NULL AUTO_INCREMENT,
   `subjectID` INT NOT NULL,
   `day` VARCHAR(10) NOT NULL,
-  `time` TIME NOT NULL, -- TIME FORMAT HH:MM:SS
+  `timeStart` TIME NOT NULL, -- TIME FORMAT HH:MM:SS
+  `timeEnd` TIME NOT NULL, -- TIME FORMAT HH:MM:SS
   CONSTRAINT `timeslot_subject_fk`
     FOREIGN KEY (`subjectID`)
     REFERENCES subject(`subjectID`)
@@ -109,7 +110,7 @@ CREATE TABLE `course`(
   `courseID` INT NOT NULL AUTO_INCREMENT,
   `hoursPerWeek` VARCHAR (10) NOT NULL,
   `school` VARCHAR (30) NOT NULL,
-  `credit` VARCHAR (30) NOT NULL,
+  `credit` INT (2) NOT NULL,
   `courseNumber` VARCHAR (20) NOT NULL,
   `id` INT NOT NULL,
   CONSTRAINT `course_studyLoad_fk`
@@ -123,7 +124,8 @@ CREATE TABLE `courseSched`(
   `courseSchedID` INT NOT NULL AUTO_INCREMENT,
   `courseID` INT NOT NULL,
   `day` VARCHAR (30) NOT NULL,
-  `time` TIME NOT NULL, -- TIME FORMAT HH:MM:SS
+  `timeStart` TIME NOT NULL, -- TIME FORMAT HH:MM:SS
+  `timeEnd` TIME NOT NULL, -- TIME FORMAT HH:MM:SS
   CONSTRAINT `courseSched_course_fk`
     FOREIGN KEY (`courseID`)
     REFERENCES course(`courseID`)
@@ -150,7 +152,8 @@ CREATE TABLE `chTimeslot`(
   `id` INT NOT NULL,
   `chID` INT NOT NULL,
   `day` varchar(10) NOT NULL,
-  `time` TIME NOT NULL, -- TIME FORMAT HH:MM:SS
+  `timeStart` TIME NOT NULL, -- TIME FORMAT HH:MM:SS
+  `timeEnd` TIME NOT NULL, -- TIME FORMAT HH:MM:SS
   CONSTRAINT `chTimeslot_consultationHours_fk`
     FOREIGN KEY (`chID`)
     REFERENCES consultationHours(`chID`),
@@ -268,7 +271,7 @@ CREATE TABLE `research`(
   `role` VARCHAR (30) NOT NULL,
   `title` VARCHAR (50) NOT NULL,
   `startDate` DATE NOT NULL, --                   DATE format: YYYY-MM-DD
-  `endDate` DATE NOT NULL, --                     DATE format: YYYY-MM-DD
+  `endDate` DATE DEFAULT NULL, --                 DATE format: YYYY-MM-DD
   `funding` VARCHAR (30) NOT NULL,
   `approvedUnits` VARCHAR (30) NOT NULL,
   CONSTRAINT `research_fsr_fk`

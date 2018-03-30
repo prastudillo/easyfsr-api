@@ -4,7 +4,6 @@ export const addSubject = `
 	INSERT INTO subject (
 		id,
 		subjectCode,
-		subjectID,
 		teachingLoadCreds,
 		noOfStudents,
 		hoursPerWeek,
@@ -14,7 +13,6 @@ export const addSubject = `
 	VALUES (
 		:id,
 		:subjectCode,
-		DEFAULT,
 		:teachingLoadCreds,
 		:noOfStudents,
 		:hoursPerWeek,
@@ -23,24 +21,21 @@ export const addSubject = `
 	)
 `;
 
-export const updateSubject = subject => `
+export const updateSubject = subject => `  			
 	UPDATE subject SET
 	${formatQueryParams(subject, 'update')}
 	WHERE subjectID = :subjectID
 `;
 
-/*
-
-// Supports single or multiple rows of delete
-export const deleteSubjects = query =>`
-	DELETE FROM subject
-	${query.length ? `WHERE ${formatQueryParams(query)}` : ''}
-`; 
-*/
-
 export const deleteSubject = `
 	DELETE FROM subject
-	WHERE id = :id AND subjectID = :subjectID
+	WHERE subjectID = :subjectID
+`;
+
+export const getSubject = `
+	SELECT *
+	FROM subject
+	WHERE subjectID =:subjectID
 `;
 
 export const getSubjects = (query, sortBy) => `
@@ -51,20 +46,13 @@ export const getSubjects = (query, sortBy) => `
   	LIMIT :limit
 `;
 
-export const getTotalSubjects = `
-	SELECT COUNT(*) as total FROM subject
+export const getTotalSubjects = query => `
+	SELECT COUNT(*) as total FROM subject ${
+    query.length ? `WHERE ${formatQueryParams(query, 'get')}` : ''
+  } 
 `;
 
-export const getTotalSubjectsByFSR = `
-	SELECT COUNT(*) as total FROM subject
-	WHERE id = :id
-`;
-
-export const getSubject = `
-	SELECT *
-	FROM teachingLoad natural join subject
-	WHERE id=:id AND subjectID =:subjectID
-`;
+//ADDITIONAL GET FOR SUBJECTS
 
 export const getSubjectsWithSched = (query, sortBy) => `
 	SELECT *
@@ -78,47 +66,15 @@ export const getSubjectsWithSched = (query, sortBy) => `
 export const getSubjectWithSched = `
 	SELECT *
 	FROM subject natural join timeslot
-	WHERE subjectID=:subjectID AND id=:id
+	WHERE subjectID=:subjectID
 `;
 
-export const addTimeslot = `
-	INSERT INTO timeslot (
-		timeslotID,
-		subjectID,
-		day,
-		time
-	)
-	VALUES (
-		DEFAULT,
-		:subjectID,
-		:day,
-		:time
-	)
+export const getTotalSubjectsByFSR = `
+	SELECT COUNT(*) as total FROM subject
+	WHERE id = :id
 `;
 
-export const getTimeslots = query => `
-	SELECT * FROM timeslot
-	${query.length ? `WHERE ${formatQueryParams(query, 'get')}` : ''}	
-`;
-
-export const updateTimeslot = timeslot => `
-	UPDATE timeslot SET
-	${formatQueryParams(timeslot, 'update')}
-	WHERE subjectID = :subjectID
-`;
-
-// Is this too specific?
-export const deleteTimeslot = `
-	DELETE FROM timeslot
-	WHERE subjectID = :subjectID AND day = :day AND time = :time 
-`;
-
-/*
-
-// Supports deleting single or multiple rows at the same time 
-
-export const deleteTimeslots = query =>`
-	DELETE FROM timeslot
+export const deleteSubjects = query => `
+	DELETE FROM subject
 	${query.length ? `WHERE ${formatQueryParams(query)}` : ''}
-`
-*/
+`;

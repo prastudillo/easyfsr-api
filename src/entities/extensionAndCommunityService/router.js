@@ -32,22 +32,22 @@ const router = Router();
  *
  * @apiSuccessExample {json} Success-Response:
  *   HTTP/1.1 200 OK
- *  {
- *   "status": 200,
- *   "message": "Successfully created service",
- *   "data": [
- *       {
- *           "id": 1,
- *           "extAndCommServiceID": 3,
- *           "participant": "12",
- *           "role": "registration",
- *           "hours": 5,
- *           "title": "Fair",
- *           "creditUnit": 3,
- *           "type": "fair",
- *           "startDate": "2018-09-09",
- *           "endDate": "2018-09-11"
- *       }
+ * {
+ *    "status": 200,
+ *    "message": "Successfully created service",
+ *    "data": [
+ *        {
+ *            "id": 1,
+ *            "extAndCommServiceID": 1,
+ *            "participant": "maniquah",
+ *            "role": "wala",
+ *            "hours": 1,
+ *            "title": "tulog",
+ *            "creditUnit": 1,
+ *            "type": "rest",
+ *            "startDate": "010118",
+ *           "endDate": "123118"
+ *        }
  *   ]
  * }
  *
@@ -113,24 +113,24 @@ router.post('/service/', async (req, res) => {
  *
  * @apiSuccessExample {json} Success-Response:
  *   HTTP/1.1 200 OK
- *  {
+ * {
  *    "status": 200,
  *    "message": "Successfully updated service",
  *    "data": [
- *      {
- *        "id": 1,
- *        "extAndCommServiceID": 1,
- *        "participant": "ren",
- *        "role": "wala",
- *        "hours": 3,
- *        "title": "tulog",
- *        "creditUnit": 1,
- *        "type": "rest",
- *        "startDate": "010118",
- *        "endDate": "123118"
- *      }
+ *        {
+ *            "id": 1,
+ *            "extAndCommServiceID": 1,
+ *            "participant": "ren",
+ *            "role": "wala",
+ *            "hours": 3,
+ *            "title": "tulog",
+ *            "creditUnit": 1,
+ *            "type": "rest",
+ *            "startDate": "010118",
+ *            "endDate": "123118"
+ *        }
  *    ]
- *  }
+ * }
  *
  * @apiError (Error 500) {String[]} errors List of errors
  * @apiError (Error 500) {String} errors.message Error message
@@ -164,6 +164,66 @@ router.put('/service/:extAndCommServiceID/', async (req, res) => {
     res.status(status).json({ status, message });
   }
 });
+
+/**
+ * @api {get} /service getExtensionAndCommunityServices
+ * @apiGroup ExtensionAndCommunityService
+ * @apiName getExtensionAndCommunityServices
+ *
+ * @apiParam (Body Params) {String} id of service
+ * @apiParam (Body Params) {String} participant
+ * @apiParam (Body Params) {String} role
+ * @apiParam (Body Params) {Integer} hours
+ * @apiParam (Body Params) {String} title
+ * @apiParam (Body Params) {Integer} creditUnit of service
+ * @apiParam (Body Params) {String} type of service
+ * @apiParam (Body Params) {String} startdate of service
+ * @apiParam (Body Params) {String} enddateof service
+ *
+ * @apiParam {String} service.id id of service
+ * @apiParam {String} service.participant participant
+ * @apiParam {String} service.role role
+ * @apiParam {Integer} service.hours hours of service
+ * @apiParam {String} service.title title of service
+ * @apiParam {Integer} service.creditUnit creditUnit of service
+ * @apiParam {String} service.type type of service
+ * @apiParam {String} service.startdate startdate of service
+ * @apiParam {String} service.enddate enddate of service
+ * @apiSuccess {Object} service new service created
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *   HTTP/1.1 200 OK
+ * {
+ *    "status": 200,
+ *    "message": "Successfully fetched services",
+ *    "data": [
+ *        {
+ *            "id": 1,
+ *            "extAndCommServiceID": 1,
+ *            "participant": "ren",
+ *            "role": "wala",
+ *            "hours": 3,
+ *            "title": "tulog",
+ *            "creditUnit": 1,
+ *            "type": "rest",
+ *            "startDate": "010118",
+ *            "endDate": "123118"
+ *        }
+ *   ],
+ *    "total": 1,
+ *    "limit": 10,
+ *    "page": 1,
+ *    "pages": 1
+ * }
+ * @apiError (Error 500) {String[]} errors List of errors
+ * @apiError (Error 500) {String} errors.message Error message
+ * @apiErrorExample {json} Error-Response:
+ *   HTTP/1.1 500 Internal Server Error
+ *   {
+ *     "status": 500,
+ *     "message": "Internal server error"
+ *   }
+ **/
 
 router.get('/service', async (req, res) => {
   try {
@@ -220,10 +280,24 @@ router.get('/service', async (req, res) => {
  *
  * @apiSuccessExample {json} Success-Response:
  *   HTTP/1.1 200 OK
- *  {
- *   "status": 200,
- *   "message": "Successfully deleted service"
- *  }
+ * {
+ *    "status": 200,
+ *    "message": "Successfully deleted service",
+ *    "data": [
+ *        {
+ *            "id": 1,
+ *            "extAndCommServiceID": 1,
+ *            "participant": "ren",
+ *            "role": "wala",
+ *            "hours": 3,
+ *            "title": "tulog",
+ *           "creditUnit": 1,
+ *           "type": "rest",
+ *           "startDate": "010118",
+ *           "endDate": "123118"
+ *       }
+ *   ]
+ * }
  *
  * @apiError (Error 500) {String[]} errors List of errors
  * @apiError (Error 500) {String} errors.message Error message
@@ -237,10 +311,12 @@ router.get('/service', async (req, res) => {
 
 router.delete('/service/:extAndCommServiceID/', async (req, res) => {
   try {
+    const service = await Ctrl.getExtensionAndCommunityService(req.params);
     await Ctrl.deleteExtensionAndCommunityService(req.params);
     res.status(200).json({
       status: 200,
       message: 'Successfully deleted service',
+      data: service,
     });
   } catch (status) {
     let message = '';

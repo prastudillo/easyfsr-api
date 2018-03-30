@@ -2,41 +2,32 @@ import db from '../../database/index';
 import * as Query from './queries';
 import { filtered, escapeSearch } from '../../utils';
 
-const awardAttributes = [
+const courseAttributes = [
   'id',
-  'grantF',
-  'chairGrantTitle',
-  'collegeHasNominated',
-  'recipientOrNominee',
-  'professionalChair',
-  'approvedStartDate',
-  'endDate',
+  'courseNumber',
+  'courseID',
+  'hoursPerWeek',
+  'school',
+  'credit',
 ];
 
-const searchFields = [
-  'chairGrantTitle',
-  'collegeHasNominated',
-  'recipientOrNominee',
-  'professionalChair',
-  'approvedStartDate',
-  'endDate',
-];
+const searchFields = ['courseNumber', 'courseID', 'school', 'credit'];
 
-export const addAward = award => {
+export const addCourse = course => {
   return new Promise((resolve, reject) => {
-    db.query(Query.addAward, award, (err, results) => {
+    db.query(Query.addCourse, course, (err, results) => {
       if (err) return reject(500);
       return resolve(results.insertId);
     });
   });
 };
 
-export const updateAward = ({ awardID }, award) => {
+export const updateCourse = ({ courseID }, course) => {
   return new Promise((resolve, reject) => {
-    if (!award) return reject(500);
+    if (!course) return reject(500);
     db.query(
-      Query.updateAward(filtered(award, awardAttributes)),
-      { awardID, ...award },
+      Query.updateCourse(filtered(course, courseAttributes)),
+      { courseID, ...course },
       (err, results) => {
         if (err) return reject(500);
         return resolve(results.insertId);
@@ -45,9 +36,9 @@ export const updateAward = ({ awardID }, award) => {
   });
 };
 
-export const deleteAward = ({ awardID }) => {
+export const deleteCourse = ({ courseID }) => {
   return new Promise((resolve, reject) => {
-    db.query(Query.deleteAward, { awardID }, (err, results) => {
+    db.query(Query.deleteCourse, { courseID }, (err, results) => {
       if (err) return reject(500);
       else if (!results.affectedRows) return reject(404);
       return resolve();
@@ -55,9 +46,9 @@ export const deleteAward = ({ awardID }) => {
   });
 };
 
-export const getAward = ({ awardID }) => {
+export const getCourse = ({ courseID }) => {
   return new Promise((resolve, reject) => {
-    db.query(Query.getAward, { awardID }, (err, results) => {
+    db.query(Query.getCourse, { courseID }, (err, results) => {
       if (err) return reject(500);
       else if (!results.length) return reject(404);
       return resolve(results[0]);
@@ -65,13 +56,13 @@ export const getAward = ({ awardID }) => {
   });
 };
 
-export const getAwards = award => {
+export const getCourses = course => {
   return new Promise((resolve, reject) => {
     db.query(
-      Query.getAwards(filtered(award, awardAttributes), award.sortBy),
+      Query.getCourses(filtered(course, courseAttributes), course.sortBy),
       {
-        field: 'chairGrantTitle',
-        ...escapeSearch(award, searchFields, award.limit),
+        field: 'courseNumber',
+        ...escapeSearch(course, searchFields, course.limit),
       },
       (err, results) => {
         if (err) return reject(500);
@@ -81,13 +72,13 @@ export const getAwards = award => {
   });
 };
 
-export const getTotalAwards = award => {
+export const getTotalCourses = course => {
   return new Promise((resolve, reject) => {
     db.query(
-      Query.getTotalAwards(filtered(award, awardAttributes)),
+      Query.getTotalCourses(filtered(course, courseAttributes)),
       {
-        field: 'chairGrantTitle',
-        ...escapeSearch(award, searchFields, award.limit),
+        field: 'courseNumber',
+        ...escapeSearch(course, searchFields, course.limit),
       },
       (err, results) => {
         if (err) return reject(500);
