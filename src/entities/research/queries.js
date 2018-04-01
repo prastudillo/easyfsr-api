@@ -1,6 +1,6 @@
 import { formatQueryParams } from '../../utils';
 
-export const addResearch = `
+export const addReseach = `
 	INSERT INTO research (
 		id,
 		researchID,
@@ -8,7 +8,6 @@ export const addResearch = `
 		role,
 		title,
 		startDate,
-		endDate,
 		funding,
 		approvedUnits
 	)
@@ -18,8 +17,7 @@ export const addResearch = `
   		:type,
   		:role,
   		:title,
-		:startDate,
-		:endDate,
+  		:startDate,
   		:funding,
   		:approvedUnits
   	)
@@ -35,27 +33,71 @@ export const getResearches = (query, sortBy) => `
 
 export const getResearch = `
 	SELECT * FROM research
-	WHERE researchID = :researchID
+	WHERE id=:id AND researchID = :researchID
 `;
 
 export const updateResearch = research => `
 	UPDATE research SET
 		${formatQueryParams(research, 'update')}
-	WHERE researchID=:researchID
+	WHERE id=:id and researchID=:researchID
 `;
 
 export const deleteResearch = `
 	delete from research
-	where researchID = :researchID
+	where id=:id AND researchID = :researchID
 `;
 
 export const getTotalResearches = `
-	SELECT count(*) as total 
-	FROM research
+	SELECT count(*) as total FROM research
 `;
 
 export const getTotalResearchesByFSR = `
-	SELECT count(*) as total 
-	FROM research 
-	WHERE id = :id 
+	SELECT count(*) as total FROM research WHERE id = :id 
+`;
+
+/*
+
+// Supports deleting single or multiple rows at the same time 
+
+export const deleteResearches = query =>`
+	DELETE FROM research
+	${query.length ? `WHERE ${formatQueryParams(query)}` : ''}
+`
+*/
+
+export const getResearchesWithCoAuthor = query => `
+	SELECT * FROM research NATURAL JOIN rCoAuthor ${
+    query.length ? `WHERE ${formatQueryParams(query, 'get')}` : ''
+  } 
+  	ORDER BY [field] ${sortBy === 'DESC' ? 'DESC' : 'ASC'} 
+  	LIMIT :limit
+`;
+
+export const getResearchWithCoAuthor = `
+	SELECT * FROM research NATURAL JOIN rCoAuthor
+	where id = :id AND researchID = :researchID
+`;
+
+export const addrCoAuthor = `
+	INSERT INTO rCoAuthor (
+		researchID,
+		userID,
+		rCoAuthorID
+	)
+	VALUES (
+		:researchID,
+		:userID,
+		DEFAULT
+	)
+`;
+
+export const updaterCoAuthor = `
+	UPDATE rCoAuthor SET
+		userID=:userID
+  	WHERE researchID=:researchID AND userID = :userID
+`;
+
+export const deleterCoAuthor = `
+	delete from rCoAuthor
+	where userID = :userID AND researchID=:researchID
 `;
