@@ -31,7 +31,6 @@ export const getLtdPractOfProfs = (query, sortBy) => `
 
 export const getLtdPractOfProf = `
   SELECT * FROM limitedPracticeOfProf
-
   WHERE limitedPracticeOfProfID = :limitedPracticeOfProfID
 `;
 
