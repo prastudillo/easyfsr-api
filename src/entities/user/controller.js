@@ -27,10 +27,14 @@ const searchFields = [
 
 export const addUser = user => {
   return new Promise((resolve, reject) => {
-    db.query(Query.addUser, { middleName: '', ...user }, (err, results) => {
-      if (err) return reject(500);
-      return resolve(results.insertId);
-    });
+    db.query(
+      Query.addUser,
+      { middleName: '', officeNumber: '', ...user },
+      (err, results) => {
+        if (err) return reject(500);
+        return resolve(results.insertId);
+      },
+    );
   });
 };
 
@@ -77,6 +81,7 @@ export const getUserByEmpID = ({ employeeID }) => {
     });
   });
 };
+
 export const getUsers = user => {
   return new Promise((resolve, reject) => {
     db.query(
@@ -90,11 +95,15 @@ export const getUsers = user => {
   });
 };
 
-export const getTotalUsers = () => {
+export const getTotalUsers = user => {
   return new Promise((resolve, reject) => {
-    db.query(Query.getTotalUsers, (err, results) => {
-      if (err) return reject(500);
-      return resolve(results[0]);
-    });
+    db.query(
+      Query.getTotalUsers(filtered(user, userAttributes)),
+      { field: 'lastName', ...escapeSearch(user, searchFields, user.limit) },
+      (err, results) => {
+        if (err) return reject(500);
+        return resolve(results[0]);
+      },
+    );
   });
 };

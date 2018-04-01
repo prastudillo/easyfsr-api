@@ -32,10 +32,21 @@ const router = Router();
  * @apiSuccessExample {json} Success-Response:
  *   HTTP/1.1 200 OK
  *   {
- *     "data": {
- *        "status": 200;
- *        "message": 'Successfully added research'
- *     }
+ *     "status": 200,
+ *     "message": "Successfully created research",
+ *     "data": [
+ *         {
+ *           "id": 1,
+ *           "researchID": 92,
+ *           "type": "annyeonglol",
+ *           "role": "role1",
+ *           "title": "title",
+ *           "startDate": "2013-01-31T16:00:00.000Z",
+ *           "endDate": "2015-01-31T16:00:00.000Z",
+ *           "funding": "fund",
+ *           "approvedUnits": "20"
+ *         }
+ *     ]
  *   }
  *
  * @apiError (Error 500) {String[]} errors List of errors
@@ -99,10 +110,21 @@ router.post('/research/', async (req, res) => {
  * @apiSuccessExample {json} Success-Response:
  *   HTTP/1.1 200 OK
  *   {
- *     "data": {
- *        "status": 200;
- *        "message": 'Successfully updated research'
- *     }
+ *      "status": 200,
+ *      "message": "Successfully updated research",
+ *      "data": [
+ *       {
+ *           "id": 1,
+ *           "researchID": 17,
+ *           "type": "annyeonglol",
+ *           "role": "role1",
+ *           "title": "title",
+ *           "startDate": "2013-01-31T16:00:00.000Z",
+ *           "endDate": "2015-01-31T16:00:00.000Z",
+ *           "funding": "fund",
+ *           "approvedUnits": "20"
+ *       }
+ *      ]
  *   }
  *
  * @apiError (Error 500) {String[]} errors List of errors
@@ -167,10 +189,21 @@ router.put('/research/:researchID', async (req, res) => {
  * @apiSuccessExample {json} Success-Response:
  *   HTTP/1.1 200 OK
  *   {
- *     "data": {
- *        "status": 200;
- *        "message": 'Successfully deleted research'
- *     }
+ *      "status": 200,
+ *      "message": "Successfully deleted research",
+ *       "data": [
+ *       {
+ *           "id": 13,
+ *           "researchID": 13,
+ *           "type": "Implementation",
+ *           "role": "Sample Role",
+ *           "title": "Sample Title",
+ *           "startDate": "2017-11-01T16:00:00.000Z",
+ *           "endDate": null,
+ *           "funding": "Sample Funding",
+ *           "approvedUnits": "5"
+ *       }
+ *     ]
  *   }
  *
  * @apiError (Error 500) {String[]} errors List of errors
@@ -185,13 +218,8 @@ router.put('/research/:researchID', async (req, res) => {
 
 router.delete('/research/:researchID', async (req, res) => {
   try {
-    const researchID = await Ctrl.deleteResearch(req.body);
-
-    const research = await Ctrl.getResearch({ researchID });
-
-    console.log(research);
-    console.log('Req.body.id: ' + req.body.id);
-    console.log('Req.body.researchID: ' + req.body.researchID);
+    const research = await Ctrl.getResearch(req.params);
+    await Ctrl.deleteResearch(req.body);
     res.status(200).json({
       status: 200,
       message: 'Successfully deleted research',
@@ -239,10 +267,21 @@ router.delete('/research/:researchID', async (req, res) => {
  * @apiSuccessExample {json} Success-Response:
  *   HTTP/1.1 200 OK
  *   {
- *     "data": {
- *        "status": 200;
- *        "message": 'Successfully fetched research'
- *     }
+ *   "status": 200,
+ *   "message": "Successfully fetched researches",
+ *   "data": [
+ *       {
+ *           "id": 1,
+ *           "researchID": 1,
+ *           "type": "Implementation",
+ *           "role": "Sample Role",
+ *           "title": "Sample Title",
+ *           "startDate": "2017-10-20T16:00:00.000Z",
+ *           "endDate": null,
+ *           "funding": "Sample Funding",
+ *           "approvedUnits": "6"
+ *       }
+ *    ]
  *   }
  *
  * @apiError (Error 500) {String[]} errors List of errors
@@ -307,10 +346,36 @@ router.get('/research/:researchID', async (req, res) => {
  * @apiSuccessExample {json} Success-Response:
  *   HTTP/1.1 200 OK
  *   {
- *     "data": {
- *        "status": 200;
- *        "message": 'Successfully fetched researches'
- *     }
+ *   "status": 200,
+ *   "message": "Successfully fetched researches",
+ *   "data": [
+ *       {
+ *           "id": 1,
+ *           "researchID": 1,
+ *           "type": "Implementation",
+ *           "role": "Sample Role",
+ *           "title": "Sample Title",
+ *           "startDate": "2017-10-20T16:00:00.000Z",
+ *           "endDate": null,
+ *           "funding": "Sample Funding",
+ *           "approvedUnits": "6"
+ *       },
+ *       {
+ *           "id": 27,
+ *           "researchID": 27,
+ *           "type": "Implementation",
+ *           "role": "Sample Role",
+ *           "title": "Sample Title",
+ *           "startDate": "2017-12-02T16:00:00.000Z",
+ *           "endDate": null,
+ *           "funding": "Sample Funding",
+ *           "approvedUnits": "4"
+ *       }
+ *    ],
+ *     "total": 2,
+ *     "limit": 12,
+ *     "page": 1,
+ *     "pages": 1
  *   }
  *
  * @apiError (Error 500) {String[]} errors List of errors
@@ -331,132 +396,19 @@ router.get('/research/', async (req, res) => {
       status: 200,
       message: 'Successfully fetched researches',
       data: researches,
-      total: researches.length,
-      limit: req.query.limit,
-      page: req.query.page,
-      pages: Math.ceil(researches.length / req.query.limit),
+      total: (await Ctrl.getTotalResearches(req.query)).total,
+      limit: parseInt(req.query.limit) || 12,
+      page: parseInt(req.query.page) || 1,
+      pages: Math.ceil(
+        (await Ctrl.getTotalResearches(req.query)).total /
+          (parseInt(req.query.limit) || 12),
+      ),
     });
   } catch (status) {
     let message = '';
     switch (status) {
       case 404:
-        message = 'Research not found';
-        break;
-      case 500:
-        message = 'Internal server error';
-        break;
-    }
-    res.status(status).json({ status, message });
-  }
-});
-
-/**
- * @api {get} /researchTotal/ getTotalResearches
- * @apiGroup Research
- * @apiName getTotalResearches
- * *
- * @apiSuccess {Integer} total total number of researches
- *
- * @apiSuccessExample {json} Success-Response:
- *   HTTP/1.1 200 OK
- *  {
-    "status": 200,
-    "message": "Successfully fetched researches count",
-    "data": [
-        {
-            "total": 11
-        }
-    ]
-  }
- * @apiError (Error 500) {Integer} errors.status 500
- * @apiError (Error 500) {String} errors.message Internal server error
- * @apiError (Error 404) {Integer} errors.status 400
- * @apiError (Error 404) {String} errors.message Researches not found
- * @apiErrorExample {json} Error-Response:
- *   HTTP/1.1 500 Internal Server Error
- *   {
- *     "status": 500,
- *     "message": "Internal server error"
- *   }
- *
- * HTTP/1.1 404 Subjects not found
- * {
- *   "status": 404,
- *   "message": "Researches not found"
- * }
- */
-
-router.get('/researchTotal/', async (req, res) => {
-  try {
-    const totalResearches = await Ctrl.getTotalResearches(req.query);
-    res.status(200).json({
-      status: 200,
-      message: 'Successfully fetched researches count',
-      data: totalResearches,
-    });
-  } catch (status) {
-    let message = '';
-    switch (status) {
-      case 404:
-        message = 'Researches not found';
-        break;
-      case 500:
-        message = 'Internal server error';
-        break;
-    }
-    res.status(status).json({ status, message });
-  }
-});
-
-/**
- * @api {get} /researchTotalByFSR/:id getTotalResearchesByFSR
- * @apiGroup Research
- * @apiName getTotalResearchesByFSR
- * *
- * @apiSuccess {Integer} total total number of researches by fsr
- *
- * @apiSuccessExample {json} Success-Response:
- *   HTTP/1.1 200 OK
- *  {
-      "status": 200,
-      "message": "Successfully fetched researches by fsr count",
-      "data": [
-          {
-              "total": 11
-          }
-      ]
-    }
- * @apiError (Error 500) {Integer} errors.status 500
- * @apiError (Error 500) {String} errors.message Internal server error
- * @apiError (Error 404) {Integer} errors.status 400
- * @apiError (Error 404) {String} errors.message Researches by fsr not found
- * @apiErrorExample {json} Error-Response:
- *   HTTP/1.1 500 Internal Server Error
- *   {
- *     "status": 500,
- *     "message": "Internal server error"
- *   }
- *
- * HTTP/1.1 404 Subjects not found
- * {
- *   "status": 404,
- *   "message": "Researches by fsr not found"
- * }
- */
-
-router.get('/researchTotalByFSR/:id', async (req, res) => {
-  try {
-    const totalResearchesByFSR = await Ctrl.getTotalResearchesByFSR(req.params);
-    res.status(200).json({
-      status: 200,
-      message: 'Successfully fetched researches by fsr count',
-      data: totalResearchesByFSR,
-    });
-  } catch (status) {
-    let message = '';
-    switch (status) {
-      case 404:
-        message = 'Researches by fsr not found';
+        message = 'Research/es not found';
         break;
       case 500:
         message = 'Internal server error';

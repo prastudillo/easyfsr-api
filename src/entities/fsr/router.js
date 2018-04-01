@@ -12,13 +12,14 @@ const router = Router();
  * @apiParam (Body Params) {Number} userID ID of user
  * @apiParam (Body Params) {String} acadYear academic year the fsr is filed
  * @apiParam (Body Params) {String} semester semester the fsr is filed
+ * @apiParam (Body Params) {Number} teachingLoadCreds teaching load credits
  *
  * @apiSuccess {Object} fsr new FSR created
  * @apiSuccess {Number} fsr.id ID of FSR
  * @apiSuccess {Number} fsr.userID ID of user
  * @apiSuccess {String} fsr.acadYear academic year the fsr is filed
  * @apiSuccess {String} fsr.semester semester the fsr is filed
- * @apiSucess {Number} fsr.teachingLoadCreds  teaching load credits
+ * @apiSuccess {Number} fsr.teachingLoadCreds teaching load credits
  * @apiSuccess {Boolean} fsr.isChecked indicates if fsr is approved or not
  *
  * @apiSuccessExample {json} Success-Response:
@@ -67,76 +68,6 @@ router.post('/fsr/', async (req, res) => {
 });
 
 /**
- * @api {delete} /fsr/:id deleteFSR
- * @apiGroup FSR
- * @apiName deleteFSR
- *
- * @apiParam (Query Params) {Number} id ID of FSR
- *
- * @apiSuccess {Object} fsr new FSR created
- * @apiSuccess {Number} fsr.id ID of FSR
- * @apiSuccess {Number} fsr.userID ID of user
- * @apiSuccess {String} fsr.acadYear academic year the fsr is filed
- * @apiSuccess {String} fsr.semester semester the fsr is filed
- * @apiSucess {Number} fsr.teachingLoadCreds  teaching load credits
- * @apiSuccess {Boolean} fsr.isChecked indicates if fsr is approved or not
- *
- * @apiSuccessExample {json} Success-Response:
- *   HTTP/1.1 200 OK
- *   {
- *     "status": 200;
- *     "message": 'Succesfully deleted fsr'
- *     "data": {
- *         "id": 92,
- *         "userID": 1,
- *         "acadYear": "2018",
- *         "semester": "2",
- *         "teachingLoadCreds": 5
- *         "isChecked": 0
- *      }
- *   }
- *
- * @apiError (Error 500) {String} status error status code
- * @apiError (Error 500) {String} message Error message
- * @apiErrorExample {json} Error-Response:
- *   HTTP/1.1 500 Internal Server Error
- *   {
- *     "status": 500,
- *     "message": "Internal server error"
- *   }
- * @apiError (Error 404) {String} status status code
- * @apiError (Error 404) {String} message Error message
- * @apiErrorExample {json} Error-Response:
- * HTTP/1.1 404 FSR not found
- * {
- *   "status": 404,
- *   "message": "FSR not found"
- * }
- */
-router.delete('/fsr/:id', async (req, res) => {
-  try {
-    const fsr = await Ctrl.getFSR(req.params);
-    await Ctrl.deleteFSR(req.params);
-    res.status(200).json({
-      status: 200,
-      message: 'Successfully deleted fsr',
-      data: fsr,
-    });
-  } catch (status) {
-    let message = '';
-    switch (status) {
-      case 404:
-        message = 'FSR not found';
-        break;
-      case 500:
-        message = 'Internal server error';
-        break;
-    }
-    res.status(status).json({ status, message });
-  }
-});
-
-/**
  * @api {get} /fsr/:id getFSR
  * @apiGroup FSR
  * @apiName getFSR
@@ -148,7 +79,7 @@ router.delete('/fsr/:id', async (req, res) => {
  * @apiSuccess {Number} fsr.userID ID of user
  * @apiSuccess {String} fsr.acadYear academic year the fsr is filed
  * @apiSuccess {String} fsr.semester semester the fsr is filed
- * @apiSucess {Number} fsr.teachingLoadCreds  teaching load credits
+ * @apiSuccess {Number} fsr.teachingLoadCreds  teaching load credits
  * @apiSuccess {Boolean} fsr.isChecked indicates if fsr is approved or not
  *
  * @apiSuccessExample {json} Success-Response:
@@ -210,6 +141,16 @@ router.get('/fsr/:id', async (req, res) => {
  * @apiGroup FSR
  * @apiName getFSRs
  *
+ * @apiParam (Query Params) {Number} [userID] ID of user
+ * @apiParam (Query Params) {String} [acadYear] academic year the fsr is filed
+ * @apiParam (Query Params) {String} [semester] semester the fsr is filed
+ * @apiParam (Query Params) {Number} [teachingLoadCreds] teaching load credits
+ * @apiParam (Query Params) {Boolean} [isChecked] indicates if fsr is approved or not
+ * @apiParam (Query Params) {Number} [page] page number
+ * @apiParam (Query Params) {Number} [limit] count limit of fsrs to fetch
+ * @apiParam (Query Params) {String} [sortBy] sort data by 'ASC' or 'DESC'
+ * @apiParam (Query Params) {String} [field] order data depending on this field. Default value is 'isChecked'
+ *
  * @apiSuccess {Object[]} fsrs new FSR created
  * @apiSuccess {Number} fsrs.id ID of FSR
  * @apiSuccess {Number} fsrs.userID ID of user
@@ -238,7 +179,11 @@ router.get('/fsr/:id', async (req, res) => {
  *            "semester": "First",
  *            "isChecked": 0
  *        },
- *      ]
+ *      ],
+ *     "total": 2,
+ *     "limit": 2,
+ *     "page": 8,
+ *     "pages": 8
  *   }
  *
  * @apiError (Error 500) {String} status error status code
@@ -266,11 +211,12 @@ router.get('/fsr', async (req, res) => {
       status: 200,
       message: 'Successfully fetched FSRs',
       data: FSRs,
-      total: FSRs.length,
-      limit: req.query.limit || 12,
-      page: req.query.page || 1,
+      total: (await Ctrl.getTotalFSRs(req.query)).total,
+      limit: parseInt(req.query.limit) || 12,
+      page: parseInt(req.query.page) || 1,
       pages: Math.ceil(
-        (await Ctrl.getTotalFSRs()).total / (req.query.limit || 12),
+        (await Ctrl.getTotalFSRs(req.query)).total /
+          (parseInt(req.query.limit) || 12),
       ),
     });
   } catch (status) {
@@ -289,7 +235,7 @@ router.get('/fsr', async (req, res) => {
 
 router.use('/fsr/:userID', (req, res, next) => {
   const { user } = req.session;
-  if (user.acctType === 'ADMIN' || user.userID == req.params.userID) {
+  if (user && (user.acctType === 'ADMIN' || user.userID == req.params.userID)) {
     return next();
   }
   res.status(403).json({
@@ -297,6 +243,7 @@ router.use('/fsr/:userID', (req, res, next) => {
     message: 'Unauthorized access',
   });
 });
+
 /**
  * @api {put} /fsr/:id updateFSR
  * @apiGroup FSR
@@ -315,7 +262,7 @@ router.use('/fsr/:userID', (req, res, next) => {
  * @apiSuccess {Number} fsr.userID ID of user
  * @apiSuccess {String} fsr.acadYear academic year the fsr is filed
  * @apiSuccess {String} fsr.semester semester the fsr is filed
- * @apiSucess {Number} fsr.teachingLoadCreds  teaching load credits
+ * @apiSuccess {Number} fsr.teachingLoadCreds  teaching load credits
  * @apiSuccess {Boolean} fsr.isChecked indicates if fsr is approved or not
  *
  *

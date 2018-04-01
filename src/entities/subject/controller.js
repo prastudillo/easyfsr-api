@@ -23,35 +23,9 @@ const searchFields = [
 
 export const addSubject = subject => {
   return new Promise((resolve, reject) => {
-    db.query(Query.addSubject, { ...subject }, (err, results) => {
+    db.query(Query.addSubject, subject, (err, results) => {
       if (err) return reject(500);
       return resolve(results.insertId);
-    });
-  });
-};
-
-export const getSubjects = subject => {
-  return new Promise((resolve, reject) => {
-    db.query(
-      Query.getSubjects(filtered(subject, subjectAttributes), subject.sortBy),
-      {
-        field: 'subjectCode',
-        ...escapeSearch(subject, searchFields, subject.limit),
-      },
-      (err, results) => {
-        if (err) return reject(500);
-        return resolve(results);
-      },
-    );
-  });
-};
-
-export const getSubject = ({ subjectID }) => {
-  return new Promise((resolve, reject) => {
-    db.query(Query.getSubject, { subjectID }, (err, results) => {
-      if (err) return reject(500);
-      else if (!results.length) return reject(404);
-      return resolve(results);
     });
   });
 };
@@ -77,6 +51,48 @@ export const deleteSubject = ({ subjectID }) => {
       else if (!results.affectedRows) return reject(404);
       return resolve(results.insertId);
     });
+  });
+};
+
+export const getSubject = ({ subjectID }) => {
+  return new Promise((resolve, reject) => {
+    db.query(Query.getSubject, { subjectID }, (err, results) => {
+      if (err) return reject(500);
+      else if (!results.length) return reject(404);
+      return resolve(results);
+    });
+  });
+};
+
+export const getSubjects = subject => {
+  return new Promise((resolve, reject) => {
+    db.query(
+      Query.getSubjects(filtered(subject, subjectAttributes), subject.sortBy),
+      {
+        field: 'subjectCode',
+        ...escapeSearch(subject, searchFields, subject.limit),
+      },
+      (err, results) => {
+        if (err) return reject(500);
+        return resolve(results);
+      },
+    );
+  });
+};
+
+export const getTotalSubjects = subject => {
+  return new Promise((resolve, reject) => {
+    db.query(
+      Query.getTotalSubjects(filtered(subject, subjectAttributes)),
+      {
+        field: 'subjectCode',
+        ...escapeSearch(subject, searchFields, subject.limit),
+      },
+      (err, results) => {
+        if (err) return reject(500);
+        return resolve(results[0]);
+      },
+    );
   });
 };
 
@@ -107,15 +123,6 @@ export const getSubjectWithSched = ({ subjectID }) => {
     db.query(Query.getSubjectWithSched, { subjectID }, (err, results) => {
       if (err) return reject(500);
       else if (!results.length) return reject(404);
-      return resolve(results);
-    });
-  });
-};
-
-export const getTotalSubjects = subject => {
-  return new Promise((resolve, reject) => {
-    db.query(Query.getTotalSubjects, { ...subject }, (err, results) => {
-      if (err) return reject(500);
       return resolve(results);
     });
   });

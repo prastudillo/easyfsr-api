@@ -60,8 +60,7 @@ export const getResearches = research => {
   return new Promise((resolve, reject) => {
     db.query(
       Query.getResearches(
-        filtered(research, researchAttributes),
-        research.sortBy,
+        filtered(research, researchAttributes, research.sortBy),
       ),
       {
         field: 'type',
@@ -75,21 +74,19 @@ export const getResearches = research => {
   });
 };
 
-export const getTotalResearches = () => {
+export const getTotalResearches = research => {
   return new Promise((resolve, reject) => {
-    db.query(Query.getTotalResearches, (err, results) => {
-      if (err) return reject(500);
-      return resolve(results);
-    });
-  });
-};
-
-export const getTotalResearchesByFSR = ({ id }) => {
-  return new Promise((resolve, reject) => {
-    db.query(Query.getTotalResearchesByFSR, { id }, (err, results) => {
-      if (err) return reject(500);
-      return resolve(results);
-    });
+    db.query(
+      Query.getTotalResearches(filtered(research, researchAttributes)),
+      {
+        field: 'type',
+        ...escapeSearch(research, searchFields, research.limit),
+      },
+      (err, results) => {
+        if (err) return reject(500);
+        return resolve(results[0]);
+      },
+    );
   });
 };
 

@@ -29,8 +29,9 @@ export const getResearches = (query, sortBy) => `
 	SELECT * FROM research ${
     query.length ? `WHERE ${formatQueryParams(query, 'get')}` : ''
   } 
-  	ORDER BY [field] ${sortBy === 'DESC' ? 'DESC' : 'ASC'} 
-  	LIMIT :limit
+  	ORDER BY [field] ${
+      sortBy === 'DESC' ? 'DESC' : 'ASC'
+    } LIMIT :limit OFFSET :offset
 `;
 
 export const getResearch = `
@@ -49,13 +50,8 @@ export const deleteResearch = `
 	where researchID = :researchID
 `;
 
-export const getTotalResearches = `
-	SELECT count(*) as total 
-	FROM research
-`;
-
-export const getTotalResearchesByFSR = `
-	SELECT count(*) as total 
-	FROM research 
-	WHERE id = :id 
+export const getTotalResearches = query => `
+	SELECT count(*) as total FROM research ${
+    query.length ? `WHERE ${formatQueryParams(query, 'get')}` : ''
+  }
 `;

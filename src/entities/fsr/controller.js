@@ -18,11 +18,9 @@ const searchFields = [
   'teachingLoadCreds',
 ];
 
-
 export const addFSR = fsr => {
   return new Promise((resolve, reject) => {
-    db.query(Query.addFSR, { ...fsr }, (err, results) => {
-      console.log(err);
+    db.query(Query.addFSR, fsr, (err, results) => {
       if (err) return reject(500);
       return resolve(results.insertId);
     });
@@ -40,16 +38,6 @@ export const updateFSR = ({ id }, fsr) => {
         return resolve(results.insertId);
       },
     );
-  });
-};
-
-export const deleteFSR = ({ id }) => {
-  return new Promise((resolve, reject) => {
-    db.query(Query.deleteFSR, { id }, (err, results) => {
-      if (err) return reject(500);
-      else if (!results.affectedRows) return reject(404);
-      return resolve();
-    });
   });
 };
 
@@ -76,11 +64,15 @@ export const getFSRs = fsr => {
   });
 };
 
-export const getTotalFSRs = () => {
+export const getTotalFSRs = fsr => {
   return new Promise((resolve, reject) => {
-    db.query(Query.getTotalFSRs, (err, results) => {
-      if (err) return reject(500);
-      return resolve(results[0]);
-    });
+    db.query(
+      Query.getTotalFSRs(filtered(fsr, fsrAttributes)),
+      { field: 'isChecked', ...escapeSearch(fsr, searchFields, fsr.limit) },
+      (err, results) => {
+        if (err) return reject(500);
+        return resolve(results[0]);
+      },
+    );
   });
 };

@@ -19,7 +19,7 @@ CREATE TABLE user(
   lastName VARCHAR (50) NOT NULL,
   committee VARCHAR (30),
   isHead BOOLEAN,      
-  officeNumber VARCHAR (30) NOT NULL, 
+  officeNumber VARCHAR (30), 
   contractType VARCHAR (40) NOT NULL, -- FULL-TIME / PART-TIME
   emailAddress VARCHAR (40) NOT NULL,
   rank VARCHAR (30),
