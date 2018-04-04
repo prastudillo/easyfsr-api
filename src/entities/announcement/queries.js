@@ -10,7 +10,7 @@ export const getAnnouncements = (query, sortBy) => `
     query.length ? `WHERE ${formatQueryParams(query, 'get')}` : ''
   } 
   ORDER BY [field] ${sortBy === 'DESC' ? 'DESC' : 'ASC'} 
-  LIMIT :limit
+  LIMIT :limit OFFSET :offset
 `;
 
 export const updateAnnouncement = announcement => `
@@ -24,15 +24,13 @@ export const addAnnouncement = `
     announcementID,
     userID,
     title,
-    body,
-    isResolved
+    body
   )
   VALUES ( 
     DEFAULT,
     :userID,
     :title,
-    :body,
-    :isResolved
+    :body
   )
 `;
 
@@ -42,6 +40,8 @@ export const deleteAnnouncement = `
   WHERE announcementID = :announcementID
 `;
 
-export const getTotalAnnouncements = `
-  SELECT count(*) as total FROM announcement
+export const getTotalAnnouncements = query => `
+  SELECT count(*) as total FROM announcement ${
+    query.length ? `WHERE ${formatQueryParams(query, 'get')}` : ''
+  }
 `;

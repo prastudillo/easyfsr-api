@@ -225,17 +225,21 @@ router.put('/service/:extAndCommServiceID/', async (req, res) => {
  *   }
  **/
 
-router.get('/service', async (req, res) => {
+router.get('/service/', async (req, res) => {
   try {
     const services = await Ctrl.getExtensionAndCommunityServices(req.query);
     res.status(200).json({
       status: 200,
       message: 'Successfully fetched services',
       data: services,
-      total: services.length,
-      limit: req.query.limit || 12,
-      page: req.query.page || 1,
-      pages: Math.ceil(services.length / (req.query.limit || 12)),
+      total: (await Ctrl.getTotalExtensionAndCommunityServices(req.query))
+        .total,
+      limit: parseInt(req.query.limit) || 12,
+      page: parseInt(req.query.page) || 1,
+      pages: Math.ceil(
+        (await Ctrl.getTotalExtensionAndCommunityServices(req.query)).total /
+          (parseInt(req.query.limit) || 12),
+      ),
     });
   } catch (status) {
     let message = '';

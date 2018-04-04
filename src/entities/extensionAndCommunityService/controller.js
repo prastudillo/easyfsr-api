@@ -25,14 +25,10 @@ const searchFields = [
 
 export const addExtensionAndCommunityService = service => {
   return new Promise((resolve, reject) => {
-    db.query(
-      Query.addExtensionAndCommunityService,
-      { ...service },
-      (err, results) => {
-        if (err) return reject(500);
-        return resolve(results.insertId);
-      },
-    );
+    db.query(Query.addExtensionAndCommunityService, service, (err, results) => {
+      if (err) return reject(500);
+      return resolve(results.insertId);
+    });
   });
 };
 
@@ -63,7 +59,7 @@ export const deleteExtensionAndCommunityService = ({ extAndCommServiceID }) => {
       (err, results) => {
         if (err) return reject(500);
         else if (!results.affectedRows) return reject(404);
-        return resolve(extAndCommServiceID);
+        return resolve();
       },
     );
   });
@@ -77,7 +73,7 @@ export const getExtensionAndCommunityService = ({ extAndCommServiceID }) => {
       (err, results) => {
         if (err) return reject(500);
         else if (!results.length) return reject(404);
-        return resolve(results);
+        return resolve(results[0]);
       },
     );
   });
@@ -90,10 +86,31 @@ export const getExtensionAndCommunityServices = service => {
         filtered(service, serviceAttributes),
         service.sortBy,
       ),
-      { field: 'title', ...escapeSearch(service, searchFields, service.limit) },
+      {
+        field: 'title',
+        ...escapeSearch(service, searchFields, service.limit),
+      },
       (err, results) => {
         if (err) return reject(500);
         return resolve(results);
+      },
+    );
+  });
+};
+
+export const getTotalExtensionAndCommunityServices = service => {
+  return new Promise((resolve, reject) => {
+    db.query(
+      Query.getTotalExtensionAndCommunityServices(
+        filtered(service, serviceAttributes),
+      ),
+      {
+        field: 'participant',
+        ...escapeSearch(service, searchFields, service.limit),
+      },
+      (err, results) => {
+        if (err) return reject(500);
+        return resolve(results[0]);
       },
     );
   });

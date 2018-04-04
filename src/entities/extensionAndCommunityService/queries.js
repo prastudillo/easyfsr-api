@@ -27,7 +27,7 @@ export const addExtensionAndCommunityService = `
 
 export const updateExtensionAndCommunityService = service => `
   UPDATE extensionAndCommunityService SET 
-  ${formatQueryParams(service, 'update')} 
+    ${formatQueryParams(service, 'update')} 
   WHERE extAndCommServiceID = :extAndCommServiceID
 `;
 
@@ -45,15 +45,15 @@ export const getExtensionAndCommunityServices = (query, sortBy) => `
   SELECT * FROM extensionAndCommunityService ${
     query.length ? `WHERE ${formatQueryParams(query, 'get')}` : ''
   }
-  ORDER BY [field] ${sortBy === 'DESC' ? 'DESC' : 'ASC'} LIMIT :limit
+  ORDER BY [field] ${
+    sortBy === 'DESC' ? 'DESC' : 'ASC'
+  } LIMIT :limit OFFSET :offset
 `;
 
-export const getTotalExtensionAndCommunityServices = `
-  SELECT count(*) as total FROM extensionAndCommunityService
-`;
-
-export const getTotalExtensionAndCommunityServicesByFSR = `
-  SELECT count(*) as total FROM extensionAndCommunityService WHERE id = :id 
+export const getTotalExtensionAndCommunityServices = query => `
+  SELECT count(*) as total FROM extensionAndCommunityService ${
+    query.length ? `WHERE ${formatQueryParams(query, 'get')}` : ''
+  }
 `;
 
 /*

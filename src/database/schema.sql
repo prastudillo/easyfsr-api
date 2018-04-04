@@ -25,6 +25,7 @@ CREATE TABLE user(
   rank VARCHAR (30),
   isArchived BOOLEAN DEFAULT 0, 
   acctType VARCHAR(10) DEFAULT 'USER', -- ADMIN / USER
+  `profileIcon` TEXT (50),
   CONSTRAINT `user_pk`
     PRIMARY KEY (`userID`),
   CONSTRAINT `user_empid_uk`
@@ -40,6 +41,7 @@ CREATE TABLE fsr(
   `semester` VARCHAR (10) NOT NULL,
   `isChecked` boolean DEFAULT 0,
   `teachingLoadCreds` INT(2) DEFAULT 0,
+  `filepath` TEXT (50),
   -- place all entitiesID here
   CONSTRAINT `fsr_pk` 
     PRIMARY KEY (`id`),
@@ -156,7 +158,8 @@ CREATE TABLE `chTimeslot`(
   `timeEnd` TIME NOT NULL, -- TIME FORMAT HH:MM:SS
   CONSTRAINT `chTimeslot_consultationHours_fk`
     FOREIGN KEY (`chID`)
-    REFERENCES consultationHours(`chID`),
+    REFERENCES consultationHours(`chID`)
+    ON DELETE CASCADE,
   CONSTRAINT `chTimeslot_consultationHours_fsr_fk`
     FOREIGN KEY (`id`)
     REFERENCES consultationHours(`id`)
@@ -177,6 +180,7 @@ CREATE TABLE `award`(
   `professionalChair` VARCHAR (50) NOT NULL,
   `approvedStartDate` DATE NOT NULL, --                   DATE format: YYYY-MM-DD
   `endDate` DATE NOT NULL, --                             DATE format: YYYY-MM-DD
+  `filepath` TEXT (50),
   CONSTRAINT `award_fsr_fk`
     FOREIGN KEY (`id`)
     REFERENCES fsr(`id`),
@@ -239,6 +243,7 @@ CREATE TABLE `creativeWork`(
   `title` VARCHAR(50) NOT NULL,
   `type` VARCHAR(50) NOT NULL,
   `credUnit` INT (10) NOT NULL,
+  `filepath` TEXT (50),
   CONSTRAINT `creativeWork_fsr_fk`
     FOREIGN KEY (`id`)
     REFERENCES fsr(`id`),
@@ -249,14 +254,11 @@ CREATE TABLE `creativeWork`(
 CREATE TABLE `cworkCoAuthor`(
   `cworkCoAuthorID` INT NOT NULL AUTO_INCREMENT,
   `creativeWorkID` INT NOT NULL,
-  `userID` INT NOT NULL,
+  `name` VARCHAR(50) NOT NULL,
   CONSTRAINT `cworkCoAuthor_creativeWork_fk`
     FOREIGN KEY (`creativeWorkID`)
     REFERENCES creativeWork(`creativeWorkID`)
   ON DELETE CASCADE,
-  CONSTRAINT `cworkCoAuthor_user_fk`
-    FOREIGN KEY (`userID`)
-    REFERENCES user(`userID`),
   CONSTRAINT `cworkCoAuthor_pk`
     PRIMARY KEY (`cworkCoAuthorID`)
 );
@@ -274,6 +276,7 @@ CREATE TABLE `research`(
   `endDate` DATE DEFAULT NULL, --                 DATE format: YYYY-MM-DD
   `funding` VARCHAR (30) NOT NULL,
   `approvedUnits` VARCHAR (30) NOT NULL,
+  `filepath` TEXT (50),
   CONSTRAINT `research_fsr_fk`
     FOREIGN KEY (`id`)
     REFERENCES fsr(`id`),
@@ -285,14 +288,11 @@ CREATE TABLE `research`(
 CREATE TABLE rCoAuthor(
   `rCoAuthorID` INT NOT NULL AUTO_INCREMENT,
   `researchID` INT NOT NULL,
-  `userID` INT NOT NULL,
+  `name` VARCHAR(50) NOT NULL,
   CONSTRAINT `rCoAuthor_research_fk`
     FOREIGN KEY (`researchID`)
     REFERENCES research(`researchID`)
   ON DELETE CASCADE,
-  CONSTRAINT `rCoAuthor_user_fk`
-    FOREIGN KEY (`userID`)
-    REFERENCES user(`userID`),
   CONSTRAINT `rCoAuthor_pk`
     PRIMARY KEY (`rCoAuthorID`)
 );
@@ -359,6 +359,47 @@ FOR EACH ROW
 UPDATE studyLoad 
   SET totalSLcredits = totalSLcredits - OLD.credit;
 
+-- VIEWS
+
+-- show profile of user 
+-- used with `WHERE userID = :userID` can also add fsr's isApproved, acadYear and semester
+CREATE OR REPLACE VIEW viewProfile AS SELECT u.userID, u.employeeID, u.password, u.firstName, u.middleName, u.lastName, 
+u.committee, u.isHead, u.officeNumber, u.contractType, u.emailAddress, u.rank, u.acctType, f.id, f.isChecked, f.acadYear, 
+f.semester FROM user u, fsr f WHERE u.userID = f.userID;
+
+-- viewAdminWork
+-- shows userID, employeeID, fsrID, adminWork fields
+CREATE OR REPLACE VIEW viewAdminWork AS SELECT u.userID, u.employeeID, f.id as fsrID, a.adminWorkID, a.position, 
+a.officeUnit, a.approvedUnits FROM adminWork a JOIN fsr f ON a.id = f.id JOIN user u on f.userID = u.userID;
+
+-- viewAward
+-- shows userID, employeeID, fsrID, award fields
+CREATE OR REPLACE VIEW viewAward AS SELECT u.userID, u.employeeID, f.id as fsrID, a.awardID, a.grantF, 
+a.chairGrantTitle, a.collegeHasNominated, a.recipientOrNominee, a.professionalChair, a.approvedStartDate, 
+a.endDate FROM award a JOIN fsr f ON a.id = f.id JOIN user u on f.userID = u.userID;
+
+-- viewExtensionAndCommunityService
+-- shows userID, employeeID, fsrID, limitedPracticeOfProf fields
+CREATE OR REPLACE VIEW viewExtensionAndCommunityService AS SELECT u.userID, u.employeeID, f.id as fsrID, 
+e.extAndCommServiceID, e.participant, e.role, e.hours, e.title, e.creditUnit, e.type, e.startDate, e.endDate 
+FROM extensionAndCommunityService e JOIN fsr f ON e.id = f.id JOIN user u on f.userID = u.userID;
+
+-- viewLimitedPracticeOfProf
+-- shows userID, employeeID, fsrID, limitedPracticeOfProf fields
+CREATE OR REPLACE VIEW viewLimitedPracticeOfProf AS SELECT u.userID, u.employeeID, f.id as fsrID, 
+l.limitedPracticeOfProfID, l.askedPermission, l.date FROM limitedPracticeOfProf l JOIN fsr f ON l.id = f.id 
+JOIN user u on f.userID = u.userID;
+
+-- viewCreativeWork
+-- shows userID, employeeID, fsrID, creativeWork fields
+CREATE OR REPLACE VIEW viewCreativeWork AS SELECT u.userID, u.employeeID, f.id as fsrID, 
+c.creativeWorkID, c.date, c.title, c.type, c.credUnit FROM creativeWork c JOIN fsr f 
+ON c.id = f.id JOIN user u on f.userID = u.userID;
+
+-- viewResearch
+CREATE OR REPLACE VIEW viewResearch AS SELECT u.userID, u.employeeID, f.id as fsrID, 
+r.researchID, r.type, r.role, r.title, r.startDate, r.endDate, r.funding, r.approvedUnits 
+FROM research r JOIN fsr f ON r.id = f.id JOIN user u on f.userID = u.userID;
 
 -- Privileges
 GRANT SUPER ON *.* TO 'easyfsr'@'localhost';

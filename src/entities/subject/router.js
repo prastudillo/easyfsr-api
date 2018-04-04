@@ -46,9 +46,8 @@ const router = Router();
  *       
  *   }
  *
- * @apiError (Error 500) {Number} status status code
- * @apiError (Error 500) {String} message error message
-
+ * @apiError (Error 500) {String} status status code
+ * @apiError (Error 500) {String} message Error message
  * @apiErrorExample {json} Error-Response:
  *   HTTP/1.1 500 Internal Server Error
  *   {
@@ -119,18 +118,17 @@ router.post('/subject/', async (req, res) => {
           }
       ]
     }
- *   
- *
- * @apiError (Error 500) {Number} status status code
- * @apiError (Error 500) {String} message error message
+ * @apiError (Error 500) {String} status error status code
+ * @apiError (Error 500) {String} message Error message
  * @apiErrorExample {json} Error-Response:
  *   HTTP/1.1 500 Internal Server Error
  *   {
  *     "status": 500,
  *     "message": "Internal server error"
  *   }
- * @apiError (Error 404) {Number} status status code
- * @apiError (Error 404) {String} message error message
+ * @apiError (Error 404) {String} status status code
+ * @apiError (Error 404) {String} message Error message
+ * @apiErrorExample {json} Error-Response:
  * HTTP/1.1 404 Subject not found
  * {
  *   "status": 404,
@@ -196,16 +194,17 @@ router.put('/subject/:subjectID', async (req, res) => {
  *     ]
  *   }
  *
- * @apiError (Error 500) {Number} status status code
- * @apiError (Error 500) {String} message error message
+ * @apiError (Error 500) {String} status error status code
+ * @apiError (Error 500) {String} message Error message
  * @apiErrorExample {json} Error-Response:
  *   HTTP/1.1 500 Internal Server Error
  *   {
  *     "status": 500,
  *     "message": "Internal server error"
  *   }
- * @apiError (Error 404) {Number} status status code
- * @apiError (Error 404) {String} message error message
+ * @apiError (Error 404) {String} status status code
+ * @apiError (Error 404) {String} message Error message
+ * @apiErrorExample {json} Error-Response:
  * HTTP/1.1 404 Subject not found
  * {
  *   "status": 404,
@@ -271,16 +270,17 @@ router.delete('/subject/:subjectID', async (req, res) => {
  *       }
  *
  *  }
- * @apiError (Error 500) {Number} status status code
- * @apiError (Error 500) {String} message error message
+ * @apiError (Error 500) {String} status error status code
+ * @apiError (Error 500) {String} message Error message
  * @apiErrorExample {json} Error-Response:
  *   HTTP/1.1 500 Internal Server Error
  *   {
  *     "status": 500,
  *     "message": "Internal server error"
  *   }
- * @apiError (Error 404) {Number} status status code
- * @apiError (Error 404) {String} message error message
+ * @apiError (Error 404) {String} status status code
+ * @apiError (Error 404) {String} message Error message
+ * @apiErrorExample {json} Error-Response:
  * HTTP/1.1 404 Subject not found
  * {
  *   "status": 404,
@@ -368,20 +368,21 @@ router.get('/subject/:subjectID', async (req, res) => {
  *     "page": 8,
  *     "pages": 8
  *  }
- * @apiError (Error 500) {Number} status status code
- * @apiError (Error 500) {String} message error message
+ * @apiError (Error 500) {String} status error status code
+ * @apiError (Error 500) {String} message Error message
  * @apiErrorExample {json} Error-Response:
  *   HTTP/1.1 500 Internal Server Error
  *   {
  *     "status": 500,
  *     "message": "Internal server error"
  *   }
- * @apiError (Error 404) {Number} status status code
- * @apiError (Error 404) {String} message error message
- * HTTP/1.1 404 Subject not found
+ * @apiError (Error 404) {String} status status code
+ * @apiError (Error 404) {String} message Error message
+ * @apiErrorExample {json} Error-Response:
+ * HTTP/1.1 404 Subjects not found
  * {
  *   "status": 404,
- *   "message": "Subject not found"
+ *   "message": "Subjects not found"
  * }
  */
 router.get('/subject/', async (req, res) => {

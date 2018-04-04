@@ -3,13 +3,13 @@ import { formatQueryParams } from '../../utils';
 export const addrCoAuthor = `
 	INSERT INTO rCoAuthor (
 		researchID,
-		userID,
-		rCoAuthorID
+		rCoAuthorID,
+		name
 	)
 	VALUES (
 		:researchID,
-		:userID,
-		DEFAULT
+		DEFAULT,
+		:name
 	)
 `;
 
@@ -17,8 +17,9 @@ export const getrCoAuthors = (query, sortBy) => `
 	SELECT * FROM research NATURAL JOIN rCoAuthor ${
     query.length ? `WHERE ${formatQueryParams(query, 'get')}` : ''
   } 
-  	ORDER BY [field] ${sortBy === 'DESC' ? 'DESC' : 'ASC'} 
-  	LIMIT :limit
+  	ORDER BY [field] ${
+      sortBy === 'DESC' ? 'DESC' : 'ASC'
+    } LIMIT :limit OFFSET :offset
 `;
 
 export const getrCoAuthor = `
@@ -35,4 +36,10 @@ export const updaterCoAuthor = rCoAuthor => `
 export const deleterCoAuthor = `
 	delete from rCoAuthor
 	where rCoAuthorID = :rCoAuthorID
+`;
+
+export const getTotalrCoAuthors = query => `
+	SELECT count(*) as total FROM rCoAuthor ${
+    query.length ? `WHERE ${formatQueryParams(query, 'get')}` : ''
+  }
 `;

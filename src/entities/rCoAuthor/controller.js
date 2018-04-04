@@ -2,11 +2,13 @@ import db from '../../database/index';
 import * as Query from './queries';
 import { filtered, escapeSearch } from '../../utils';
 
-const rCoAuthorAttributes = ['rCoAuthorID', 'userID', 'researchID'];
+const rCoAuthorAttributes = ['rCoAuthorID', 'researchID', 'name'];
+
+const searchFields = ['researchID', 'name'];
 
 export const addrCoAuthor = rCoAuthor => {
   return new Promise((resolve, reject) => {
-    db.query(Query.addrCoAuthor, { ...rCoAuthor }, (err, results) => {
+    db.query(Query.addrCoAuthor, rCoAuthor, (err, results) => {
       console.log(err);
       if (err) return reject(500);
       return resolve(results.insertId);
@@ -32,7 +34,8 @@ export const getrCoAuthor = ({ rCoAuthorID }) => {
   return new Promise((resolve, reject) => {
     db.query(Query.getrCoAuthor, { rCoAuthorID }, (err, results) => {
       if (err) return reject(500);
-      return resolve(results);
+      else if (!results.length) return reject(404);
+      return resolve(results[0]);
     });
   });
 };
@@ -62,5 +65,21 @@ export const deleterCoAuthor = ({ rCoAuthorID }) => {
       if (err) return reject(500);
       return resolve();
     });
+  });
+};
+
+export const getTotalrCoAuthors = rCoAuthor => {
+  return new Promise((resolve, reject) => {
+    db.query(
+      Query.getTotalrCoAuthors(filtered(rCoAuthor, rCoAuthorAttributes)),
+      {
+        field: 'researchID',
+        ...escapeSearch(rCoAuthor, searchFields, rCoAuthor.limit),
+      },
+      (err, results) => {
+        if (err) return reject(500);
+        return resolve(results[0]);
+      },
+    );
   });
 };

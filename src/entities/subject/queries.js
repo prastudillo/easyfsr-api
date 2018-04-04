@@ -51,30 +51,3 @@ export const getTotalSubjects = query => `
     query.length ? `WHERE ${formatQueryParams(query, 'get')}` : ''
   } 
 `;
-
-//ADDITIONAL GET FOR SUBJECTS
-
-export const getSubjectsWithSched = (query, sortBy) => `
-	SELECT *
-	FROM subject natural join timeslot ${
-    query.length ? `WHERE ${formatQueryParams(query, 'get')}` : ''
-  }
-	ORDER BY [field] ${sortBy === 'DESC' ? 'DESC' : 'ASC'} 
-	LIMIT :limit
-`;
-
-export const getSubjectWithSched = `
-	SELECT *
-	FROM subject natural join timeslot
-	WHERE subjectID=:subjectID
-`;
-
-export const getTotalSubjectsByFSR = `
-	SELECT COUNT(*) as total FROM subject
-	WHERE id = :id
-`;
-
-export const deleteSubjects = query => `
-	DELETE FROM subject
-	${query.length ? `WHERE ${formatQueryParams(query)}` : ''}
-`;
