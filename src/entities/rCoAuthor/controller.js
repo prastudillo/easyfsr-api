@@ -9,7 +9,6 @@ const searchFields = ['researchID', 'name'];
 export const addrCoAuthor = rCoAuthor => {
   return new Promise((resolve, reject) => {
     db.query(Query.addrCoAuthor, rCoAuthor, (err, results) => {
-      console.log(err);
       if (err) return reject(500);
       return resolve(results.insertId);
     });
@@ -48,7 +47,7 @@ export const getrCoAuthors = rCoAuthor => {
         rCoAuthor.sortBy,
       ),
       {
-        field: 'researchID',
+        field: 'name',
         ...escapeSearch(rCoAuthor, searchFields, rCoAuthor.limit),
       },
       (err, results) => {
@@ -73,7 +72,7 @@ export const getTotalrCoAuthors = rCoAuthor => {
     db.query(
       Query.getTotalrCoAuthors(filtered(rCoAuthor, rCoAuthorAttributes)),
       {
-        field: 'researchID',
+        field: 'name',
         ...escapeSearch(rCoAuthor, searchFields, rCoAuthor.limit),
       },
       (err, results) => {

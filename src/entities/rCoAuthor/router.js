@@ -73,7 +73,7 @@ router.post('/rCoAuthor/', async (req, res) => {
  * @apiGroup rCoAuthor
  * @apiName updaterCoAuthor
  *
- * @apiParam (Body Params) {String} rCoAuthorID ID of rCoAuthor
+ * @apiParam (Query Params) {String} rCoAuthorID ID of rCoAuthor
  * @apiParam (Body Params) {String} researchID ID of research
  * @apiParam (Body Params) {String} name name of coAuthor
  *
@@ -140,9 +140,7 @@ router.put('/rCoAuthor/:rCoAuthorID', async (req, res) => {
  * @apiGroup rCoAuthor
  * @apiName deleterCoAuthor
  *
- * @apiParam (Body Params) {String} rCoAuthorID ID of rCoAuthor
- * @apiParam (Body Params) {String} researchID ID of research
- * @apiParam (Body Params) {String} name name of coAuthor
+ * @apiParam (Query Params) {String} rCoAuthorID ID of rCoAuthor
  *
  * @apiSuccess {Object} rCoAuthor Successfully deleted research with coAuthor
  * @apiSuccess {String} rCoAuthor.rCoAuthorID rCoAuthorID of rCoAuthor
@@ -165,7 +163,7 @@ router.put('/rCoAuthor/:rCoAuthorID', async (req, res) => {
  *       "approvedUnits": "3",
  *       "filepath": null,
  *       "rCoAuthorID": 20,
- *       "name": "Trixie Bza"
+ *       "name": "Trixia Bza"
  *    }
  *   }
  * @apiError (Error 500) {String} status status code
@@ -206,9 +204,7 @@ router.delete('/rCoAuthor/:rCoAuthorID', async (req, res) => {
  * @apiGroup rCoAuthor
  * @apiName getrCoAuthor
  *
- * @apiParam (Body Params) {String} rCoAuthorID ID of rCoAuthor
- * @apiParam (Body Params) {String} researchID ID of research
- * @apiParam (Body Params) {String} name name of coAuthor
+ * @apiParam (Query Params) {String} rCoAuthorID ID of rCoAuthor
  *
  * @apiSuccess {Object} rCoAuthor Successfully fetched research with coAuthor
  * @apiSuccess {String} rCoAuthor.rCoAuthorID rCoAuthorID of rCoAuthor
@@ -242,6 +238,13 @@ router.delete('/rCoAuthor/:rCoAuthorID', async (req, res) => {
  *     "status": 500,
  *     "message": "Internal server error"
  *   }
+ * @apiError (Error 404) {String} status status code
+ * @apiError (Error 404) {String} message Error message
+ * HTTP/1.1 404 Research with CoAuthor not found
+ * {
+ *   "status": 404,
+ *   "message": "Research with CoAuthor not found"
+ * }
  */
 
 router.get('/rCoAuthor/:rCoAuthorID', async (req, res) => {
@@ -272,9 +275,13 @@ router.get('/rCoAuthor/:rCoAuthorID', async (req, res) => {
  * @apiGroup rCoAuthor
  * @apiName getrCoAuthors
  *
- * @apiParam (Body Params) {String} rCoAuthorID ID of rCoAuthor
- * @apiParam (Body Params) {String} researchID ID of research
- * @apiParam (Body Params) {String} name name of coAuthor
+ * @apiParam (Query Params) {String} [rCoAuthorID] ID of rCoAuthor
+ * @apiParam (Query Params) {String} [researchID] ID of research
+ * @apiParam (Query Params) {String} [name] name of coAuthor
+ * @apiParam (Query Params) {Number} [page] page number
+ * @apiParam (Query Params) {Number} [limit] count limit of researches with coAuthor to fetch
+ * @apiParam (Query Params) {String} [sortBy] sort data by 'ASC' or 'DESC'
+ * @apiParam (Query Params) {String} [field] order data depending on this field. Default value is 'name'
  *
  * @apiSuccess {Object} rCoAuthor Successfully fetched researches with coAuthor
  * @apiSuccess {String} rCoAuthor.rCoAuthorID rCoAuthorID of rCoAuthor
@@ -343,6 +350,14 @@ router.get('/rCoAuthor/:rCoAuthorID', async (req, res) => {
  *     "status": 500,
  *     "message": "Internal server error"
  *   }
+ * @apiError (Error 404) {String} status status code
+ * @apiError (Error 404) {String} message Error message
+ * @apiErrorExample {json} Error-Response:
+ * HTTP/1.1 404 Research with CoAuthor not found
+ * {
+ *   "status": 404,
+ *   "message": "Research with CoAuthor not found"
+ * }
  */
 
 router.get('/rCoAuthor/', async (req, res) => {

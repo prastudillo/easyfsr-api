@@ -28,6 +28,42 @@ export const getUserAdminWork = query => {
   });
 };
 
+export const getConsultationHours = query => {
+  return new Promise((resolve, reject) => {
+    db.query(Query.getConsultationHours, query, (err, results) => {
+      if (err) return reject(500);
+      else return resolve(results);
+    });
+  });
+};
+
+export const getSLCourse = query => {
+  return new Promise((resolve, reject) => {
+    db.query(Query.getSLCourse, query, (err, results) => {
+      if (err) return reject(500);
+      else return resolve(results);
+    });
+  });
+};
+
+export const getSubject = query => {
+  return new Promise((resolve, reject) => {
+    db.query(Query.getSubject, query, (err, results) => {
+      if (err) return reject(500);
+      else return resolve(results);
+    });
+  });
+};
+
+export const getStudyLoad = query => {
+  return new Promise((resolve, reject) => {
+    db.query(Query.getStudyLoad, query, (err, results) => {
+      if (err) return reject(500);
+      else return resolve(results);
+    });
+  });
+};
+
 export const getUserExtensionAndCommunityService = query => {
   return new Promise((resolve, reject) => {
     db.query(Query.getExtensionAndCommunityService, query, (err, results) => {

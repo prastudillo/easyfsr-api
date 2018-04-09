@@ -35,7 +35,7 @@ export const deleteSubject = `
 export const getSubject = `
 	SELECT *
 	FROM subject
-	WHERE subjectID =:subjectID
+	WHERE subjectID = :subjectID
 `;
 
 export const getSubjects = (query, sortBy) => `

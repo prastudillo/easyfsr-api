@@ -1,6 +1,5 @@
 import { formatQueryParams } from '../../utils';
 
-// Admin Work
 export const addAdminWork = `
 	INSERT INTO adminWork (
 		adminWorkID,
@@ -18,45 +17,33 @@ export const addAdminWork = `
 	)
 `;
 
-export const getAdminWorks = (query, sortBy) => `
-	SELECT * FROM adminWork ${
-    query.length ? `WHERE ${formatQueryParams(query, 'get')}` : ''
-  } 
-  ORDER BY [field] ${sortBy === 'DESC' ? 'DESC' : 'ASC'} 
-  LIMIT :limit
-`;
-
-export const getAdminWork = `
-	SELECT * FROM adminWork
-	WHERE id = :id AND adminWorkID = :adminWorkID
-`;
-
 export const updateAdminWork = adminWork => `
 	UPDATE adminWork SET
 	${formatQueryParams(adminWork, 'update')}
-	WHERE id = :id AND adminWorkID = :adminWorkID
+	WHERE adminWorkID = :adminWorkID
 `;
 
 export const deleteAdminWork = `
 	DELETE FROM adminWork
-	WHERE id = :id AND adminWorkID = :adminWorkID
+	WHERE adminWorkID = :adminWorkID
 `;
 
-export const getTotalAdminWorks = `
-	SELECT count(*) as total FROM adminWork
+export const getAdminWorks = (query, sortBy) => `
+ SELECT * FROM adminWork ${
+   query.length ? `WHERE ${formatQueryParams(query, 'get')}` : ''
+ }
+  ORDER BY [field] ${sortBy === 'DESC' ? 'DESC' : 'ASC'} 
+  LIMIT :limit 
+  OFFSET :offset
 `;
 
-export const getTotalAdminWorksByFSR = `
-	SELECT count(*) as total FROM adminWork WHERE id = :id 
+export const getAdminWork = `
+	SELECT * FROM adminWork
+	WHERE adminWorkID = :adminWorkID
 `;
 
-/*
-
-// Supports single or multiple rows delete
-
-export const deleteAdminWork = query => `
-  DELETE FROM adminWork
-  ${query.length ? `WHERE ${formatQueryParams(query)}` : ''}
+export const getTotalAdminWorks = query => `
+	SELECT COUNT(*) as total FROM adminWork ${
+    query.length ? `WHERE ${formatQueryParams(query, 'get')}` : ''
+  } 
 `;
-
-*/

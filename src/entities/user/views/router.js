@@ -54,6 +54,43 @@ router.get('/user/:employeeID/adminWork', async (req, res) => {
   }
 });
 
+router.get('/user/:employeeID/studyLoad', async (req, res) => {
+  try {
+    const studyLoad = await Ctrl.getUserStudyLoad(req.params);
+
+    res.status(200).json({
+      status: 200,
+      message: 'Successfully fetched study loads of user',
+      data: studyLoad,
+    });
+  } catch (err) {
+    res.status(status).json({
+      status,
+      message: 'Internal server error while getting user admin works',
+    });
+  }
+});
+
+router.get('/user/:employeeID/schedule', async (req, res) => {
+  try {
+    const subjects = await Ctrl.getUserSubject(req.params);
+    const consultationHours = await Ctrl.getUserConsultationHours(req.params);
+    const courses = await Ctrl.getSLCourse(req.params);
+    const schedule = [...subjects, ...consultationHours, ...courses];
+    res.status(200).json({
+      status: 200,
+      message: 'Successfully fetched schedule',
+      data: schedule,
+    });
+  } catch (err) {
+    res.status(status).json({
+      status,
+      message:
+        'Internal server error while getting user extension and community service',
+    });
+  }
+});
+
 router.get(
   '/user/:employeeID/extensionAndCommunityService',
   async (req, res) => {
@@ -61,7 +98,6 @@ router.get(
       const extensionAndCommunityService = await Ctrl.getUserExtensionAndCommunityService(
         req.params,
       );
-
       res.status(200).json({
         status: 200,
         message: 'Successfully fetched extension and community service of user',

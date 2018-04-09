@@ -22,7 +22,7 @@ CREATE TABLE user(
   officeNumber VARCHAR (30), 
   contractType VARCHAR (40) NOT NULL, -- FULL-TIME / PART-TIME
   emailAddress VARCHAR (40) NOT NULL,
-  rank VARCHAR (30),
+  rank VARCHAR (30) NOT NULL,
   isArchived BOOLEAN DEFAULT 0, 
   acctType VARCHAR(10) DEFAULT 'USER', -- ADMIN / USER
   `profileIcon` TEXT (50),
@@ -40,7 +40,9 @@ CREATE TABLE fsr(
   `acadYear` VARCHAR (20) NOT NULL,
   `semester` VARCHAR (10) NOT NULL,
   `isChecked` boolean DEFAULT 0,
+  `isTurnedIn` boolean DEFAULT 0,
   `teachingLoadCreds` INT(2) DEFAULT 0,
+  `totalCHours` INT(2) DEFAULT 0, 
   `filepath` TEXT (50),
   -- place all entitiesID here
   CONSTRAINT `fsr_pk` 
@@ -101,6 +103,8 @@ CREATE TABLE `studyLoad`(
   `university` VARCHAR (50) NOT NULL,
   `totalSLcredits` INT (10) DEFAULT 0,
   `id` INT NOT NULL,
+  `fullLeaveWithPay` BOOLEAN DEFAULT 0,
+  `fellowshipRecipient` BOOLEAN DEFAULT 0,
   CONSTRAINT `studyLoad_fsr_fk`
     FOREIGN KEY (`id`)
     REFERENCES fsr(`id`),
@@ -136,12 +140,15 @@ CREATE TABLE `courseSched`(
     PRIMARY KEY (courseSchedID)
 );
 
--- Consultation hours and CH Timeslot
+-- Consultation hours 
 
 CREATE TABLE `consultationHours`(
   `chID` INT NOT NULL AUTO_INCREMENT,
+  `day` varchar(10) NOT NULL,
+  `place` VARCHAR (30) NOT NULL,
+  `timeStart` TIME NOT NULL, -- TIME FORMAT HH:MM:SS
+  `timeEnd` TIME NOT NULL, -- TIME FORMAT HH:MM:SS
   `id` INT NOT NULL,
-  `place` varchar (50) NOT NULL,
   CONSTRAINT `consultationHours_fsr_fk`
     FOREIGN KEY (`id`)
     REFERENCES fsr(`id`),
@@ -359,47 +366,78 @@ FOR EACH ROW
 UPDATE studyLoad 
   SET totalSLcredits = totalSLcredits - OLD.credit;
 
+CREATE TRIGGER insert_CHours
+AFTER INSERT ON consultationHours
+FOR EACH ROW
+  UPDATE fsr
+    SET totalCHours = totalCHours + (SELECT TIMESTAMPDIFF(HOUR, NEW.timeStart, NEW.timeEnd))
+    WHERE id = NEW.id;
+
 -- VIEWS
 
 -- show profile of user 
 -- used with `WHERE userID = :userID` can also add fsr's isApproved, acadYear and semester
-CREATE OR REPLACE VIEW viewProfile AS SELECT u.userID, u.employeeID, u.password, u.firstName, u.middleName, u.lastName, 
+
+CREATE OR REPLACE VIEW viewProfile AS SELECT u.employeeID, u.middleName, u.lastName, 
 u.committee, u.isHead, u.officeNumber, u.contractType, u.emailAddress, u.rank, u.acctType, f.id, f.isChecked, f.acadYear, 
 f.semester FROM user u, fsr f WHERE u.userID = f.userID;
 
 -- viewAdminWork
 -- shows userID, employeeID, fsrID, adminWork fields
-CREATE OR REPLACE VIEW viewAdminWork AS SELECT u.userID, u.employeeID, f.id as fsrID, a.adminWorkID, a.position, 
+CREATE OR REPLACE VIEW viewAdminWork AS SELECT  u.employeeID, a.position, 
 a.officeUnit, a.approvedUnits FROM adminWork a JOIN fsr f ON a.id = f.id JOIN user u on f.userID = u.userID;
 
 -- viewAward
 -- shows userID, employeeID, fsrID, award fields
-CREATE OR REPLACE VIEW viewAward AS SELECT u.userID, u.employeeID, f.id as fsrID, a.awardID, a.grantF, 
+CREATE OR REPLACE VIEW viewAward AS SELECT  u.employeeID, a.grantF, 
 a.chairGrantTitle, a.collegeHasNominated, a.recipientOrNominee, a.professionalChair, a.approvedStartDate, 
 a.endDate FROM award a JOIN fsr f ON a.id = f.id JOIN user u on f.userID = u.userID;
 
 -- viewExtensionAndCommunityService
 -- shows userID, employeeID, fsrID, limitedPracticeOfProf fields
-CREATE OR REPLACE VIEW viewExtensionAndCommunityService AS SELECT u.userID, u.employeeID, f.id as fsrID, 
-e.extAndCommServiceID, e.participant, e.role, e.hours, e.title, e.creditUnit, e.type, e.startDate, e.endDate 
+CREATE OR REPLACE VIEW viewExtensionAndCommunityService AS SELECT  u.employeeID, e.participant, e.role, e.hours, e.title, e.creditUnit, e.type, e.startDate, e.endDate 
 FROM extensionAndCommunityService e JOIN fsr f ON e.id = f.id JOIN user u on f.userID = u.userID;
 
 -- viewLimitedPracticeOfProf
 -- shows userID, employeeID, fsrID, limitedPracticeOfProf fields
-CREATE OR REPLACE VIEW viewLimitedPracticeOfProf AS SELECT u.userID, u.employeeID, f.id as fsrID, 
-l.limitedPracticeOfProfID, l.askedPermission, l.date FROM limitedPracticeOfProf l JOIN fsr f ON l.id = f.id 
+CREATE OR REPLACE VIEW viewLimitedPracticeOfProf AS SELECT u.employeeID, l.askedPermission, l.date FROM limitedPracticeOfProf l JOIN fsr f ON l.id = f.id 
 JOIN user u on f.userID = u.userID;
 
 -- viewCreativeWork
 -- shows userID, employeeID, fsrID, creativeWork fields
-CREATE OR REPLACE VIEW viewCreativeWork AS SELECT u.userID, u.employeeID, f.id as fsrID, 
-c.creativeWorkID, c.date, c.title, c.type, c.credUnit FROM creativeWork c JOIN fsr f 
+CREATE OR REPLACE VIEW viewCreativeWork AS SELECT u.employeeID, c.date, c.title, c.type, c.credUnit FROM creativeWork c JOIN fsr f 
 ON c.id = f.id JOIN user u on f.userID = u.userID;
 
 -- viewResearch
-CREATE OR REPLACE VIEW viewResearch AS SELECT u.userID, u.employeeID, f.id as fsrID, 
-r.researchID, r.type, r.role, r.title, r.startDate, r.endDate, r.funding, r.approvedUnits 
+CREATE OR REPLACE VIEW viewResearch AS SELECT  u.employeeID, r.type, r.role, r.title, r.startDate, r.endDate, r.funding, r.approvedUnits 
 FROM research r JOIN fsr f ON r.id = f.id JOIN user u on f.userID = u.userID;
+
+ -- viewConsultationHours
+-- userID, employeeID, fsrID, consultationHours fields, chTimeslot fields
+CREATE OR REPLACE VIEW viewConsultationHours AS SELECT u.employeeID, c.place, c.day, c.timeStart, c.timeEnd FROM user u JOIN fsr f ON u.userID = f.userID 
+JOIN consultationHours c ON f.id = c.id;
+
+-- viewSubjectTimeslot
+-- userID, employeeID, fsrID, subject fields, timeslot fields
+CREATE OR REPLACE VIEW viewSubjectTimeslot AS SELECT  u.employeeID
+,s.subjectCode, s.teachingLoadCreds, s.noOfStudents, s.hoursPerWeek, s.room, 
+t.day, t.timeStart, t.timeEnd FROM user u JOIN fsr f ON u.userID = f.userID 
+JOIN subject s ON f.id = s.id JOIN timeslot t ON s.subjectID = t.subjectID;
+
+
+-- viewStudyLoad
+-- shows userID, employeeID, fsrID, studyLoad fields
+CREATE OR REPLACE VIEW viewStudyLoad AS SELECT  u.employeeID, 
+s.degree, s.university, s.fullLeaveWithPay, s.fellowshipRecipient, s.totalSLcredits 
+FROM user u JOIN fsr f ON u.userID = f.userID JOIN studyLoad s ON f.id = s.id;
+
+-- view entities tied with studyLoad
+-- viewSLCourse
+CREATE OR REPLACE VIEW viewSLCourses AS SELECT u.employeeID,
+s.university, s.degree, c.courseID, c.courseNumber, c.school, c.credit, c.hoursPerWeek, 
+cs.day, cs.timeStart, cs.timeEnd FROM user u JOIN fsr f ON u.userID = f.userID JOIN 
+studyLoad s ON f.id = s.id JOIN course c ON f.id = c.id JOIN courseSched cs ON c.courseID = cs.courseID;
+
 
 -- Privileges
 GRANT SUPER ON *.* TO 'easyfsr'@'localhost';

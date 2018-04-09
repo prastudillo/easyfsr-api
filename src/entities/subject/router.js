@@ -314,7 +314,7 @@ router.get('/subject/:subjectID', async (req, res) => {
  * @apiGroup Subject
  * @apiName getSubjects
  *
- *
+ * @apiParam (Query Params) {Number} [id]  fsr id 
  * @apiParam (Query Params) {Number} [subjectCode] subject code of subject
  * @apiParam (Query Params) {Number} [teachingLoadCreds] teaching load credits of subject
  * @apiParam (Query Params) {Number} [noOfStudents] number of students enrolled in the subject

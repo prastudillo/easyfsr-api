@@ -87,7 +87,7 @@ router.post('/research/', async (req, res) => {
  * @apiGroup Research
  * @apiName updateResearch
  *
- * @apiParam (Body Params) {String} id of fsr
+ * @apiParam (Query Params) {String} id of fsr
  * @apiParam (Body Params) {String} researchID ID of research
  * @apiParam (Body Params) {String} type type of research
  * @apiParam (Body Params) {String} role role of research
@@ -166,15 +166,7 @@ router.put('/research/:researchID', async (req, res) => {
  * @apiGroup Research
  * @apiName deleteResearch
  *
- * @apiParam (Body Params) {String} id of fsr
- * @apiParam (Body Params) {String} researchID ID of research
- * @apiParam (Body Params) {String} type type of research
- * @apiParam (Body Params) {String} role role of research
- * @apiParam (Body Params) {String} title title of research
- * @apiParam (Body Params) {String} startDate start date of research
- * @apiParam (Body Params) {String} endDate end date of research
- * @apiParam (Body Params) {String} funding funding of research
- * @apiParam (Body Params) {String} approvedUnits approved units of research
+ * @apiParam (Query Params) {String} id of fsr
  *
  * @apiSuccess {Object} research Successfully deleted research
  * @apiSuccess {String} research.researchID ID of research
@@ -244,23 +236,15 @@ router.delete('/research/:researchID', async (req, res) => {
  * @apiGroup Research
  * @apiName getResearch
  *
- * @apiParam (Body Params) {String} id of fsr
- * @apiParam (Body Params) {String} researchID ID of research
- * @apiParam (Body Params) {String} type type of research
- * @apiParam (Body Params) {String} role role of research
- * @apiParam (Body Params) {String} title title of research
- * @apiParam (Body Params) {String} startDate start date of research
- * @apiParam (Body Params) {String} endDate end date of research
- * @apiParam (Body Params) {String} funding funding of research
- * @apiParam (Body Params) {String} approvedUnits approved units of research
+ * @apiParam (Query Params) {String} id of fsr
  *
  * @apiSuccess {Object} research Successfully fetched research
  * @apiSuccess {String} research.researchID ID of research
  * @apiSuccess {String} research.type type of research
  * @apiSuccess {String} research.role role of research
  * @apiSuccess {String} research.title title of research
- * @apiSuccess {String} research.startDate start date of research
- * @apiSuccess {String} research.endDate end date of research
+ * @apiSuccess {Date} research.startDate start date of research
+ * @apiSuccess {Date} research.endDate end date of research
  * @apiSuccess {String} research.funding funding of research
  * @apiSuccess {String} research.approvedUnits approved units of research
  *
@@ -323,23 +307,27 @@ router.get('/research/:researchID', async (req, res) => {
  * @apiGroup Research
  * @apiName getResearches
  *
- * @apiParam (Body Params) {String} id of fsr
- * @apiParam (Body Params) {String} researchID ID of research
- * @apiParam (Body Params) {String} type type of research
- * @apiParam (Body Params) {String} role role of research
- * @apiParam (Body Params) {String} title title of research
- * @apiParam (Body Params) {String} startDate start date of research
- * @apiParam (Body Params) {String} endDate end date of research
- * @apiParam (Body Params) {String} funding funding of research
- * @apiParam (Body Params) {String} approvedUnits approved units of research
+ * @apiParam (Query Params) {String} [id] of fsr
+ * @apiParam (Query Params) {String} [researchID] ID of research
+ * @apiParam (Query Params) {String} [type] type of research
+ * @apiParam (Query Params) {String} [role] role of research
+ * @apiParam (Query Params) {String} [title] title of research
+ * @apiParam (Query Params) {Date} [startDate] start date of research
+ * @apiParam (Query Params) {Date} [endDate] end date of research
+ * @apiParam (Query Params) {String} [funding] funding of research
+ * @apiParam (Query Params) {String} [approvedUnits] approved units of research
+ * @apiParam (Query Params) {Number} [limit] count limit of researches to fetch
+ * @apiParam (Query Params) {String} [sortBy] sort data by 'ASC' or 'DESC'
+ * @apiParam (Query Params) {String} [field] order data depending on this field. Default value is 'type'
+ *
  *
  * @apiSuccess {Object} research Successfully fetched researches
  * @apiSuccess {String} research.researchID ID of research
  * @apiSuccess {String} research.type type of research
  * @apiSuccess {String} research.role role of research
  * @apiSuccess {String} research.title title of research
- * @apiSuccess {String} research.startDate start date of research
- * @apiSuccess {String} research.endDate end date of research
+ * @apiSuccess {Date} research.startDate start date of research
+ * @apiSuccess {Date} research.endDate end date of research
  * @apiSuccess {String} research.funding funding of research
  * @apiSuccess {String} research.approvedUnits approved units of research
  *
@@ -378,8 +366,8 @@ router.get('/research/:researchID', async (req, res) => {
  *     "pages": 1
  *   }
  *
- * @apiError (Error 500) {String[]} errors List of errors
- * @apiError (Error 500) {String} errors.message Error message
+ * @apiError (Error 500) {String} status status code
+ * @apiError (Error 500) {String} message Error message
  * @apiErrorExample {json} Error-Response:
  *   HTTP/1.1 500 Internal Server Error
  *   {

@@ -12,6 +12,7 @@ import serviceRouter from './entities/extensionAndCommunityService/router';
 import userRouter from './entities/user/router';
 import researchRouter from './entities/research/router';
 import rCoAuthorRouter from './entities/rCoAuthor/router';
+import adminWorkRouter from './entities/adminWork/router';
 import creativeWorkRouter from './entities/creativeWork/router';
 import userViewRouter from './entities/user/views/router';
 import announcementRouter from './entities/announcement/router';
@@ -57,5 +58,6 @@ router.use(rCoAuthorRouter);
 
 router.use(announcementRouter);
 router.use(userRouter);
+router.use(adminWorkRouter);
 
 export default router;

@@ -68,7 +68,7 @@ export const getResearches = research => {
       },
       (err, results) => {
         if (err) return reject(500);
-        return resolve(results);
+        return resolve(results[0]);
       },
     );
   });
