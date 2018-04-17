@@ -11,7 +11,6 @@ import courseSchedRouter from './entities/courseSched/router';
 import fsrRouter from './entities/fsr/router';
 import limitedPracticeOfProfRouter from './entities/limitedPracticeOfProf/router';
 import serviceRouter from './entities/extensionAndCommunityService/router';
-import userRouter from './entities/user/router';
 import notificationRouter from './entities/notification/router';
 import adminWorkRouter from './entities/adminWork/router';
 import creativeWorkRouter from './entities/creativeWork/router';

@@ -106,8 +106,6 @@ CREATE TABLE `studyLoad`(
   `university` VARCHAR (50) NOT NULL,
   `totalSLcredits` INT (10) DEFAULT 0,
   `id` INT NOT NULL,
-  `fullLeaveWithPay` BOOLEAN DEFAULT 0,
-  `fellowshipRecipient` BOOLEAN DEFAULT 0,
   CONSTRAINT `studyLoad_fsr_fk`
     FOREIGN KEY (`id`)
     REFERENCES fsr(`id`),
